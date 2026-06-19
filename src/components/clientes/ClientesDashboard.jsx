@@ -20,7 +20,7 @@ import {
   RotateCcw,
   Copy,
 } from 'lucide-react';
-import { parsearExtractoPDF } from '../../core/parsers/parseDocumento';
+import { parsearExtractoPDF } from '../../core/parsers/parserBancolombia';
 import { agruparPorCliente, calcularEstadisticasGlobales } from '../../core/analytics/clientesAnalytics';
 import { buscarClientes } from '../../core/utils/fuzzySearch';
 import { guardarDatos, obtenerDatos, agregarActividad } from '../../infra/storage/localStorage.service';

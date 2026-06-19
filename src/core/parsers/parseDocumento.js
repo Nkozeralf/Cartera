@@ -54,7 +54,7 @@ const PATRONES_LIMPIAR = [
 ];
 
 // ✅ Función principal con auditoría completa
-export async function parsearExtractoPDFConAuditoria(file) {
+export async function parsearExtractoPDFConAuditoria(file, options = {}) {
   const pdfjsLib = await import('pdfjs-dist');
   pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
@@ -89,7 +89,7 @@ export async function parsearExtractoPDFConAuditoria(file) {
     }
   }
 
-  const result = extraerMovimientosConAuditoria(textoCompleto, estadisticas);
+  const result = extraerMovimientosConAuditoria(textoCompleto, estadisticas, options);
   movimientos.push(...result.movimientos);
   movimientosRechazados.push(...result.rechazados);
   estadisticas = result.estadisticas;
@@ -181,7 +181,7 @@ function reconstruirTexto(items) {
     .join('\n');
 }
 
-function extraerMovimientosConAuditoria(texto, estadisticas) {
+function extraerMovimientosConAuditoria(texto, estadisticas, options = {}) {
   const lineas = texto.split('\n');
   const movimientos = [];
   const rechazados = [];
@@ -232,8 +232,8 @@ function extraerMovimientosConAuditoria(texto, estadisticas) {
 
     const valor = parsearValorCOP(valorStr);
     
-    // ✅ SOLO ACEPTAR VALORES POSITIVOS (ingresos)
-    if (valor <= 0) {
+    // ✅ SOLO ACEPTAR VALORES POSITIVOS (ingresos) a menos que options.includeNegativos === true
+    if (!options.includeNegativos && valor <= 0) {
       estadisticas.lineasRechazadas++;
       rechazados.push({
         linea: limpia,
