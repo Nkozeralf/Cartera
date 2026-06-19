@@ -1,0 +1,302 @@
+/* ✅ Footer */
+.footer {
+  background: var(--navy);
+  border-top: 1px solid rgba(255,255,255,0.04);
+  padding: 8px 24px;
+  font-family: var(--font-ui);
+  margin-top: auto;
+  width: 100%;
+}
+
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footerMain {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Brand */
+.footerBrand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.brandLogo {
+  height: 20px;
+  width: auto;
+  
+}
+
+.brandName {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: -0.02em;
+}
+
+.brandVersion {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.712);
+  font-weight: 400;
+}
+
+/* Stats */
+.footerStats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.footerStat {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.footerStatLabel {
+  color: rgba(255,255,255,0.25);
+  font-weight: 400;
+}
+
+.footerStatValue {
+  color: rgba(255,255,255,0.7);
+  font-weight: 600;
+}
+
+.footerStatDivider {
+  width: 1px;
+  height: 14px;
+  background: rgba(255,255,255,0.06);
+}
+
+.footerStatEmpty {
+  font-size: 11px;
+  color: rgba(255,255,255,0.2);
+}
+
+/* Tech */
+.footerTech {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.techItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.25);
+}
+
+.techItem svg {
+  width: 11px;
+  height: 11px;
+}
+
+.techItem.stable {
+  color: #10b981;
+}
+
+.techItem.warning {
+  color: #f59e0b;
+}
+
+.techItem.error {
+  color: #ef4444;
+}
+
+.techDivider {
+  width: 1px;
+  height: 12px;
+  background: rgba(255,255,255,0.06);
+}
+
+/* Chart */
+.footerChart {
+  width: 120px;
+  height: 30px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.02);
+  border-radius: 4px;
+  padding: 1px 0;
+}
+
+.footerChartEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 9px;
+  color: rgba(255,255,255,0.15);
+}
+
+/* Scroll Button */
+.scrollButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  color: rgba(255,255,255,0.25);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.scrollButton:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.6);
+  transform: translateY(-2px);
+}
+
+.scrollButton::after {
+  content: 'Volver arriba';
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: rgba(11,16,38,0.95);
+  color: rgba(255,255,255,0.8);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.scrollButton:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+/* Responsive - Mobile First */
+@media (max-width: 900px) {
+  .footer {
+    padding: 6px 16px;
+  }
+  
+  .footerMain {
+    gap: 6px;
+  }
+  
+  .brandName {
+    font-size: 11px;
+  }
+  
+  .brandLogo {
+    height: 16px;
+  }
+  
+  .brandVersion {
+    display: none;
+  }
+  
+  .footerStats {
+    gap: 8px;
+  }
+  
+  .footerStat {
+    font-size: 10px;
+  }
+  
+  .footerStatDivider {
+    height: 10px;
+  }
+  
+  .footerChart {
+    width: 60px;
+    height: 20px;
+  }
+  
+  .scrollButton {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .scrollButton svg {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .footerTech {
+    display: none; /* Ocultar info técnica en móvil */
+  }
+}
+
+@media (max-width: 600px) {
+  .footer {
+    padding: 4px 12px;
+  }
+  
+  .footerMain {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  
+  .brandName {
+    font-size: 10px;
+  }
+  
+  .brandLogo {
+    height: 14px;
+  }
+  
+  .footerStats {
+    gap: 4px;
+    font-size: 9px;
+  }
+  
+  .footerStat {
+    font-size: 9px;
+  }
+  
+  .footerStatDivider {
+    display: none;
+  }
+  
+  .footerStatLabel {
+    display: none; /* Ocultar labels en móvil muy pequeño */
+  }
+  
+  .footerChart {
+    width: 40px;
+    height: 16px;
+  }
+  
+  .scrollButton {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .scrollButton svg {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .scrollButton::after {
+    display: none;
+  }
+}
