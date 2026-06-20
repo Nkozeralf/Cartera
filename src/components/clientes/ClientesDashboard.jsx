@@ -25,315 +25,16 @@ import {
 } from 'lucide-react';
 import { parseDocumento, ErrorFormatoNoReconocido } from '@/core/parsers/parseDocumento.js';
 import { agruparPorCliente, calcularEstadisticasGlobales, obtenerMovimientosDeCliente } from '../../core/analytics/clientesAnalytics';
-import { buscarClientes } from '../../core/utils/fuzzySearch';
+import { obtenerClientesRankeados } from '../../core/analytics/clientesSelectors';
 import { guardarDatos, obtenerDatos, agregarActividad } from '../../infra/storage/localStorage.service';
 import { formatCOP, formatNumber } from '../../core/utils/formatUtils';
 import styles from './ClientesDashboard.module.css';
 
-// ✅ MAPEO DE LOGOS POR BANCO
-const BANCO_LOGOS = {
-  'Bancolombia': 'https://www.bancolombia.com/wcm/connect/b8e4c3f2-36a9-497d-a125-ac04f83b0bf8/LogoBancolombia.png?MOD=AJPERES',
-  'BBVA': 'https://w7.pngwing.com/pngs/605/74/png-transparent-banco-bilbao-vizcaya-argentaria-logo-bank-business-river-club-blue-text-trademark.png',
-  // Agregar más bancos aquí
-};
-
-// ✅ MAPEO DE ICONOS POR CLIENTE (existente)
-const CLIENTE_ICONS = {
-  'NEQUI': 'https://cdn.brandfetch.io/idVKd5RHgI/w/400/h/400/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1781708737156',
-  'DAVIPLATA': 'https://cdn.brandfetch.io/idYUaU0ImR/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1772768145632',
-  'DAVI PLATA': 'https://cdn.brandfetch.io/idYUaU0ImR/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1772768145632',
-  'AUROS COPIAS': 'https://auros.com.co/wp-content/uploads/2026/02/cropped-favicon-300x300.png',
-  'AUROS COPIAS S.A.S': 'https://auros.com.co/wp-content/uploads/2026/02/cropped-favicon-300x300.png',
-  'BOYDORR': 'https://boydorr.com/wp-content/uploads/2023/05/profile-boydorr-lb-v2.png',
-  'PEXTO COLOMBIA': 'https://colombiafintech.co/wp-content/uploads/2025/07/WhatsApp-Image-2026-04-13-at-8.41.23-AM.jpeg',
-  'ATTON BOGOTA 93': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmmCt0Vvyn9MWVQuImfyLuHGa_hm8gwqy3hg&s',
-  'DANOSA ANDINA S': 'https://www.danosa.com/es-co/wp-content/uploads/sites/8/2026/03/FAVICON_logo_danosa_nuevo_azul.svg',
-};
-
-// ✅ Función para obtener el logo del banco
-function getBancoLogo(bancoNombre) {
-  if (!bancoNombre) return null;
-  if (BANCO_LOGOS[bancoNombre]) return BANCO_LOGOS[bancoNombre];
-  for (const [key, url] of Object.entries(BANCO_LOGOS)) {
-    if (bancoNombre.includes(key) || key.includes(bancoNombre)) {
-      return url;
-    }
-  }
-  return null;
-}
-
-// ✅ Función para obtener icono de cliente (existente)
-function getClienteIcon(clienteNombre) {
-  if (!clienteNombre) return null;
-  const normalized = clienteNombre.toUpperCase().trim();
-  
-  if (normalized.includes('SIN IDENTIFICAR') || normalized.includes('SINIDENTIFICAR')) {
-    return null;
-  }
-  
-  for (const [key, url] of Object.entries(CLIENTE_ICONS)) {
-    if (normalized.includes(key) || key.includes(normalized)) {
-      return url;
-    }
-  }
-  return null;
-}
-
-function esSinIdentificar(clienteNombre) {
-  if (!clienteNombre) return true;
-  const normalized = clienteNombre.toUpperCase().trim();
-  return normalized.includes('SIN IDENTIFICAR') || 
-         normalized.includes('SINIDENTIFICAR') ||
-         normalized === 'SIN IDENTIFICAR';
-}
-
-// ✅ Toast component
-function Toast({ message, action, onAction, onClose }) {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 5000);
-    return () => clearTimeout(timer);
-  }, [onClose]);
-
-  return (
-    <div className={styles.toast}>
-      <span className={styles.toastMessage}>{message}</span>
-      {action && (
-        <button className={styles.toastAction} onClick={onAction}>
-          <RotateCcw size={14} />
-          {action}
-        </button>
-      )}
-      <button className={styles.toastClose} onClick={onClose}>
-        <X size={16} />
-      </button>
-    </div>
-  );
-}
-
-// ✅ KPI Component
-function KPI({ icon: Icon, value, label, color }) {
-  return (
-    <div className={`${styles.kpi} ${styles[color]}`}>
-      <div className={styles.kpiIcon}>
-        <Icon size={18} />
-      </div>
-      <div className={styles.kpiInfo}>
-        <span className={styles.kpiValue}>{value}</span>
-        <span className={styles.kpiLabel}>{label}</span>
-      </div>
-    </div>
-  );
-}
-
-// ✅ Cliente Card
-function ClienteCard({ cliente, onClick, isSelected }) {
-  const iconUrl = getClienteIcon(cliente.nombre);
-  const esSinId = esSinIdentificar(cliente.nombre);
-  
-  return (
-    <div 
-      className={`${styles.clienteCard} ${isSelected ? styles.selected : ''}`}
-      onClick={() => onClick(cliente)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && onClick(cliente)}
-    >
-      <div className={styles.clienteCardHeader}>
-        <div className={styles.clienteCardNombre}>
-          {iconUrl ? (
-            <img src={iconUrl} alt={cliente.nombre} className={styles.clienteCardIcon} />
-          ) : esSinId ? (
-            <HelpCircle size={16} className={styles.clienteCardIconSinId} />
-          ) : (
-            <Building2 size={16} className={styles.clienteCardIconDefault} />
-          )}
-          <span className={esSinId ? styles.clienteNombreSinId : ''}>{cliente.nombre}</span>
-        </div>
-        <span className={styles.clienteCardRank}>#{cliente.rank || 0}</span>
-      </div>
-      <div className={styles.clienteCardMonto}>{formatCOP(cliente.total)}</div>
-      <div className={styles.clienteCardDetalle}>
-        <span>{cliente.cantidad} pagos</span>
-        <span>Prom: {formatCOP(cliente.total / cliente.cantidad)}</span>
-        <span>Último: {cliente.ultimoPago || '—'}</span>
-      </div>
-      <div className={styles.clienteCardBar}>
-        <div 
-          className={styles.clienteCardBarFill}
-          style={{ width: `${Math.min((cliente.total / (cliente._maxTotal || 1)) * 100, 100)}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-// 🔄 CAMBIO: Drawer - muestra el logo del banco correcto
-function ClienteDrawer({ cliente, movimientos, onClose, filtroDireccion, detecciones }) {
-  const [toastMessage, setToastMessage] = useState(null);
-  
-  const pagosCliente = useMemo(() => {
-    return obtenerMovimientosDeCliente(cliente, movimientos);
-  }, [movimientos, cliente]);
-
-  const iconUrl = getClienteIcon(cliente.nombre);
-  const esSinId = esSinIdentificar(cliente.nombre);
-
-  // 🔄 CAMBIO: Obtener el banco del cliente basado en el primer movimiento
-  const bancoOrigen = useMemo(() => {
-    if (!detecciones || detecciones.length === 0) return null;
-    if (pagosCliente.length === 0) return null;
-    
-    // Tomar el banco de la detección del primer movimiento
-    // Asumimos que el primer movimiento tiene un campo que indica el banco
-    const primerMovimiento = pagosCliente[0];
-    if (primerMovimiento && primerMovimiento.banco) {
-      return primerMovimiento.banco;
-    }
-    
-    // Fallback: usar el primer banco detectado
-    return detecciones[0]?.banco || null;
-  }, [detecciones, pagosCliente]);
-
-  const logoBanco = bancoOrigen ? getBancoLogo(bancoOrigen) : null;
-
-  // 🔄 CAMBIO: Label dinámico según filtro
-  const getTotalLabel = () => {
-    if (filtroDireccion === 'INGRESO') return 'Total recaudado';
-    if (filtroDireccion === 'EGRESO') return 'Total pagado';
-    if (filtroDireccion === 'TODOS') return 'Balance neto';
-    return 'Total';
-  };
-
-  const handleCopyNombre = useCallback(() => {
-    navigator.clipboard.writeText(cliente.nombre).then(() => {
-      setToastMessage('Nombre copiado');
-      setTimeout(() => setToastMessage(null), 2000);
-    });
-  }, [cliente.nombre]);
-
-  const handleCopyPagos = useCallback(() => {
-    const texto = pagosCliente.map(p => 
-      `${p.fecha} | ${p.descripcion} | ${formatCOP(p.valor)}`
-    ).join('\n');
-    navigator.clipboard.writeText(texto).then(() => {
-      setToastMessage(`${pagosCliente.length} pagos copiados`);
-      setTimeout(() => setToastMessage(null), 2000);
-    });
-  }, [pagosCliente]);
-
-  const handleCopyPago = useCallback((pago) => {
-    const texto = `${pago.fecha} | ${pago.descripcion} | ${formatCOP(pago.valor)}`;
-    navigator.clipboard.writeText(texto).then(() => {
-      setToastMessage('Pago copiado');
-      setTimeout(() => setToastMessage(null), 2000);
-    });
-  }, []);
-
-  return (
-    <div className={styles.drawerOverlay} onClick={onClose}>
-      <div className={styles.drawer} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.drawerHeader}>
-          <div className={styles.drawerTitle}>
-            {iconUrl ? (
-              <img src={iconUrl} alt={cliente.nombre} className={styles.drawerIcon} />
-            ) : esSinId ? (
-              <HelpCircle size={20} className={styles.drawerIconSinId} />
-            ) : (
-              <Building2 size={20} className={styles.drawerIconDefault} />
-            )}
-            <span className={esSinId ? styles.drawerTitleSinId : ''}>{cliente.nombre}</span>
-            <button 
-              className={styles.drawerCopyBtn} 
-              onClick={handleCopyNombre}
-              aria-label="Copiar nombre del cliente"
-              title="Copiar nombre"
-            >
-              <Copy size={14} />
-            </button>
-          </div>
-          <div className={styles.drawerHeaderRight}>
-            {/* 🔄 CAMBIO: Mostrar logo del banco en el drawer (más grande) */}
-            {logoBanco && (
-              <img 
-                src={logoBanco} 
-                alt={bancoOrigen} 
-                className={styles.drawerBancoLogo}
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
-              />
-            )}
-            <button className={styles.drawerClose} onClick={onClose}>
-              <X size={20} />
-            </button>
-          </div>
-        </div>
-        
-        {toastMessage && (
-          <div className={styles.drawerToast}>
-            <span>✅ {toastMessage}</span>
-          </div>
-        )}
-        
-        <div className={styles.drawerStats}>
-          <div className={styles.drawerStat}>
-            <span className={styles.drawerStatLabel}>{getTotalLabel()}</span>
-            <span className={styles.drawerStatValue}>{formatCOP(cliente.total)}</span>
-          </div>
-          <div className={styles.drawerStat}>
-            <span className={styles.drawerStatLabel}>Movimientos</span>
-            <span className={styles.drawerStatValue}>{cliente.cantidad}</span>
-          </div>
-          <div className={styles.drawerStat}>
-            <span className={styles.drawerStatLabel}>Promedio</span>
-            <span className={styles.drawerStatValue}>{formatCOP(cliente.total / cliente.cantidad)}</span>
-          </div>
-        </div>
-
-        <div className={styles.drawerSection}>
-          <div className={styles.drawerSectionHeader}>
-            <h4 className={styles.drawerSectionTitle}>Historial de movimientos</h4>
-            {pagosCliente.length > 0 && (
-              <button 
-                className={styles.drawerCopyAllBtn} 
-                onClick={handleCopyPagos}
-                aria-label="Copiar todos los movimientos"
-                title="Copiar todos los movimientos"
-              >
-                <Copy size={14} />
-                Copiar todo
-              </button>
-            )}
-          </div>
-          <div className={styles.drawerPagos}>
-            {pagosCliente.length > 0 ? (
-              pagosCliente.map((pago, i) => (
-                <div key={i} className={styles.drawerPago}>
-                  <span className={styles.drawerPagoFecha}>{pago.fecha}</span>
-                  <span className={styles.drawerPagoDesc}>{pago.descripcion}</span>
-                  <span className={styles.drawerPagoValor}>{formatCOP(pago.valor)}</span>
-                  <button 
-                    className={styles.drawerPagoCopy}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCopyPago(pago);
-                    }}
-                    aria-label="Copiar este movimiento"
-                    title="Copiar movimiento"
-                  >
-                    <Copy size={12} />
-                  </button>
-                </div>
-              ))
-            ) : (
-              <div className={styles.drawerEmpty}>No hay movimientos registrados</div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+import Toast from './components/Toast';
+import KPI from './components/KPI';
+import ClienteCard from './components/ClienteCard';
+import ClienteDrawer from './components/ClienteDrawer';
+import { getBancoLogo, getClienteIcon, esSinIdentificar } from './utils/clientesVisualUtils';
 
 export default function ClientesDashboard({ onClientesUpdate }) {
   const [extractos, setExtractos] = useState([]);
@@ -393,10 +94,7 @@ export default function ClientesDashboard({ onClientesUpdate }) {
       setMovimientos(datos.movimientos);
       setExtractos(datos.extractos || []);
       setDetecciones(datos.detecciones || []);
-      const clientes = agruparPorCliente(datos.movimientos);
-      const sorted = [...clientes].sort((a, b) => b.total - a.total);
-      const maxTotal = sorted[0]?.total || 1;
-      const clientesConRank = sorted.map((c, i) => ({ ...c, rank: i + 1, _maxTotal: maxTotal }));
+      const clientesConRank = obtenerClientesRankeados(datos.movimientos);
       setClientesData(clientesConRank);
       
       if (onClientesUpdate) {
@@ -487,10 +185,7 @@ export default function ClientesDashboard({ onClientesUpdate }) {
     setMetadatasExtractos(metadatas);
     setDetecciones(deteccionesPorArchivo);
     
-    const clientes = agruparPorCliente(todosMovimientos);
-    const sorted = [...clientes].sort((a, b) => b.total - a.total);
-    const maxTotal = sorted[0]?.total || 1;
-    const clientesConRank = sorted.map((c, i) => ({ ...c, rank: i + 1, _maxTotal: maxTotal }));
+    const clientesConRank = obtenerClientesRankeados(todosMovimientos);
     setClientesData(clientesConRank);
     
     if (onClientesUpdate) {
@@ -618,14 +313,8 @@ export default function ClientesDashboard({ onClientesUpdate }) {
 
   // 🔄 CAMBIO: Usar movimientosFiltrados para los cálculos
   const clientesFiltrados = useMemo(() => {
-    const clientes = agruparPorCliente(movimientosFiltrados);
-    const sorted = [...clientes].sort((a, b) => b.total - a.total);
-    const maxTotal = sorted[0]?.total || 1;
-    const clientesConRank = sorted.map((c, i) => ({ ...c, rank: i + 1, _maxTotal: maxTotal }));
-    return searchTerm.trim() 
-      ? buscarClientes(clientesConRank, searchTerm)
-      : clientesConRank;
-  }, [movimientosFiltrados, searchTerm]);
+      return obtenerClientesRankeados(movimientosFiltrados, searchTerm);
+    }, [movimientosFiltrados, searchTerm]);
 
   // 🔄 CAMBIO: Estadísticas basadas en movimientos filtrados
   const estadisticas = useMemo(() => calcularEstadisticasGlobales(clientesFiltrados), [clientesFiltrados]);
@@ -649,10 +338,21 @@ export default function ClientesDashboard({ onClientesUpdate }) {
     if (detecciones.length === 0) return null;
     const bancoCount = {};
     detecciones.forEach(d => {
-      bancoCount[d.banco] = (bancoCount[d.banco] || 0) + 1;
+      const name = (d.banco || '').toLowerCase().trim();
+      bancoCount[name] = (bancoCount[name] || 0) + 1;
     });
     const sorted = Object.entries(bancoCount).sort((a, b) => b[1] - a[1]);
     return sorted[0]?.[0] || null;
+  }, [detecciones]);
+
+  const bancosUnicos = useMemo(() => {
+    const seen = new Set();
+    return detecciones.filter(d => {
+      const name = (d.banco || '').toLowerCase().trim();
+      if (!name || seen.has(name)) return false;
+      seen.add(name);
+      return true;
+    });
   }, [detecciones]);
 
   const logoBanco = bancoPrincipal ? getBancoLogo(bancoPrincipal) : null;
@@ -681,27 +381,26 @@ export default function ClientesDashboard({ onClientesUpdate }) {
           : 'Sube uno o varios extractos bancarios para analizar tus clientes'}
       </p>
       {/* 🔄 CAMBIO: Mostrar TODOS los logos de bancos en el header */}
-      {detecciones.length > 0 && (
+      {bancosUnicos.length > 0 && (
         <div className={styles.bancosBadgeContainer}>
-          {detecciones.map((d, index) => {
+          {bancosUnicos.map((d) => {
             const logo = getBancoLogo(d.banco);
             if (!logo) return null;
+            const key = (d.banco || '').toLowerCase().trim();
             return (
               <img 
-                key={index}
+                key={key}
                 src={logo} 
                 alt={d.banco} 
                 className={styles.bancoLogo}
                 title={d.banco}
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
+                onError={(e) => { e.target.style.display = 'none'; }}
               />
             );
           })}
-          {detecciones.length > 3 && (
+          {bancosUnicos.length > 3 && (
             <span className={styles.bancoMulti}>
-              +{detecciones.length - 3}
+              +{bancosUnicos.length - 3}
             </span>
           )}
         </div>
@@ -865,9 +564,9 @@ export default function ClientesDashboard({ onClientesUpdate }) {
 
           {viewMode === 'cards' ? (
             <div className={styles.clientesGrid}>
-              {clientesFiltrados.map((cliente, i) => (
+              {clientesFiltrados.map((cliente) => (
                 <ClienteCard 
-                  key={i} 
+                  key={cliente.nombre || cliente.rank} 
                   cliente={cliente} 
                   onClick={handleClienteClick}
                   isSelected={clienteSeleccionado?.nombre === cliente.nombre}
@@ -888,9 +587,9 @@ export default function ClientesDashboard({ onClientesUpdate }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {clientesFiltrados.map((cliente, i) => (
+                  {clientesFiltrados.map((cliente) => (
                     <tr 
-                      key={i} 
+                      key={cliente.nombre || cliente.rank} 
                       className={styles.row}
                       onClick={() => handleClienteClick(cliente)}
                     >
@@ -925,13 +624,13 @@ export default function ClientesDashboard({ onClientesUpdate }) {
               <FileText size={14} />
               {extractos.length} extracto{extractos.length > 1 ? 's' : ''} cargados
             </span>
-            {detecciones.length > 0 && (
+            {bancosUnicos.length > 0 && (
               <span className={styles.footerBancos}>
                 <Banknote size={14} />
-                {detecciones.map((d, i) => (
-                  <span key={i} className={styles.footerBanco}>
+                {bancosUnicos.map((d, idx) => (
+                  <span key={(d.banco || '').toLowerCase().trim()} className={styles.footerBanco}>
                     {d.banco}
-                    {i < detecciones.length - 1 && ', '}
+                    {idx < bancosUnicos.length - 1 && ', '}
                   </span>
                 ))}
               </span>
