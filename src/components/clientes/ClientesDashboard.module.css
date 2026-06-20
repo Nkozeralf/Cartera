@@ -385,6 +385,60 @@
   white-space: nowrap;
 }
 
+/* Search Full Width */
+.searchContainerFull {
+  position: relative;
+  width: 100%;
+}
+
+.searchIconFull {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-text);
+}
+
+.searchInputFull {
+  width: 100%;
+  padding: 12px 48px 12px 44px;
+  border: 2px solid var(--gray-border);
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: var(--font-ui);
+  transition: all 0.2s ease;
+  background: var(--white);
+  color: var(--navy);
+}
+
+.searchInputFull:focus {
+  outline: none;
+  border-color: var(--navy);
+  box-shadow: 0 0 0 4px rgba(0,43,100,0.08);
+}
+
+.searchInputFull::placeholder {
+  color: var(--gray-text);
+}
+
+.clearSearchFull {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--gray-text);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.clearSearchFull:hover {
+  background: var(--gray-bg);
+  color: var(--navy);
+}
+
 /* Clientes Grid (Cards) */
 .clientesGrid {
   display: grid;
@@ -561,6 +615,23 @@
   gap: 6px;
 }
 
+/* ============================================
+   📋 FOOTER - Bancos detectados
+   ============================================ */
+
+.footerBancos {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--gray-text, #64748b);
+  font-size: 12px;
+}
+
+.footerBanco {
+  font-weight: 500;
+  color: var(--navy, #0a1e3c);
+}
+
 /* Drawer */
 .drawerOverlay {
   position: fixed;
@@ -699,93 +770,164 @@
   color: #10b981;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .kpiGrid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 768px) {
-  .container { padding: 20px 16px; }
-  .header { flex-direction: column; align-items: stretch; }
-  .headerLeft { gap: 12px; }
-  .headerIcon { width: 40px; height: 40px; }
-  .headerIcon svg { width: 20px; height: 20px; }
-  .titulo { font-size: 22px; }
-  .headerActions { justify-content: flex-start; }
-  .kpiGrid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .kpi { padding: 10px 14px; }
-  .kpiValue { font-size: 15px; }
-  .searchSection { flex-direction: column; align-items: stretch; }
-  .searchContainer { max-width: 100%; }
-  .clientesGrid { grid-template-columns: 1fr; }
-  .drawer { max-width: 100%; padding: 16px; }
-  .drawerStats { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 480px) {
-  .kpiGrid { grid-template-columns: 1fr; }
-  .tabla th, .tabla td { padding: 6px 8px; font-size: 11px; }
-  .clienteCell { min-width: 100px; }
-  .dropZone { padding: 32px 16px; }
-  .uploadIcon { width: 56px; height: 56px; }
-  .uploadIcon svg { width: 32px; height: 32px; }
-}
-
-/* ✅ Search Full Width */
-.searchContainerFull {
-  position: relative;
-  width: 100%;
-}
-
-.searchIconFull {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--gray-text);
-}
-
-.searchInputFull {
-  width: 100%;
-  padding: 12px 48px 12px 44px;
-  border: 2px solid var(--gray-border);
-  border-radius: 10px;
-  font-size: 15px;
-  font-family: var(--font-ui);
-  transition: all 0.2s ease;
-  background: var(--white);
-  color: var(--navy);
-}
-
-.searchInputFull:focus {
-  outline: none;
-  border-color: var(--navy);
-  box-shadow: 0 0 0 4px rgba(0,43,100,0.08);
-}
-
-.searchInputFull::placeholder {
-  color: var(--gray-text);
-}
-
-.clearSearchFull {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
+.drawerPagoCopy {
   background: none;
   border: none;
   color: var(--gray-text);
   cursor: pointer;
-  padding: 4px;
+  padding: 2px;
   border-radius: 4px;
+  opacity: 0;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.clearSearchFull:hover {
+.drawerPago:hover .drawerPagoCopy {
+  opacity: 1;
+}
+
+.drawerPagoCopy:hover {
   background: var(--gray-bg);
   color: var(--navy);
 }
 
-/* ✅ Toast */
+.drawerEmpty {
+  padding: 20px;
+  text-align: center;
+  color: var(--gray-text);
+  font-size: 14px;
+}
+
+.drawerToast {
+  padding: 8px 16px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #10b981;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ============================================
+   🏦 DRAWER - Logo del banco (más grande)
+   ============================================ */
+
+.drawerHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.drawerBancoLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: var(--white, #ffffff);
+  padding: 4px;
+  border: 1.5px solid var(--gray-border, #e2e8f0);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.drawerBancoLogo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.drawerSectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.drawerCopyAllBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 1px solid var(--gray-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: var(--font-ui);
+  color: var(--gray-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.drawerCopyAllBtn:hover {
+  border-color: var(--navy);
+  color: var(--navy);
+}
+
+.drawerCopyBtn {
+  background: none;
+  border: none;
+  color: var(--gray-text);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.drawerCopyBtn:hover {
+  background: var(--gray-bg);
+  color: var(--navy);
+}
+
+/* ✅ Cliente Card Icon */
+.clienteCardIcon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: var(--white);
+  flex-shrink: 0;
+}
+
+.clienteCardIconDefault {
+  color: var(--gray-text);
+  flex-shrink: 0;
+}
+
+.clienteCardIconSinId {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.clienteNombreSinId {
+  color: #f59e0b;
+}
+
+/* ✅ Drawer Iconos */
+.drawerIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: var(--white);
+  flex-shrink: 0;
+}
+
+.drawerIconSinId {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.drawerIconDefault {
+  color: var(--gray-text);
+  flex-shrink: 0;
+}
+
+.drawerTitleSinId {
+  color: #f59e0b;
+}
+
+/* Toast */
 .toast {
   position: fixed;
   bottom: 32px;
@@ -846,139 +988,329 @@
   color: white;
 }
 
-/* ✅ Cliente Card Icon */
-.clienteCardIcon {
+/* ============================================
+   🎯 FILTRO DE DIRECCIÓN - PREMIUM
+   ============================================ */
+
+.filtroDireccion {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: var(--gray-bg, #f1f5f9);
+  border-radius: 10px;
+  border: 1px solid var(--gray-border, #e2e8f0);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.filtroDireccion:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.filtroDireccionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  min-height: 32px;
+  min-width: 72px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--gray-text, #64748b);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-ui);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.filtroDireccionBtn svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s ease;
+}
+
+.filtroDireccionBtn:hover:not(.active) {
+  color: var(--navy, #0a1e3c);
+  background: rgba(0, 43, 100, 0.06);
+  transform: translateY(-1px);
+}
+
+.filtroDireccionBtn.active {
+  background: linear-gradient(135deg, var(--navy, #0a1e3c), #1a365d);
+  color: #ffffff;
+  box-shadow: 
+    0 2px 8px rgba(0, 43, 100, 0.20),
+    0 1px 3px rgba(0, 43, 100, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+  font-weight: 600;
+}
+
+.filtroDireccionBtn.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.filtroDireccionBtn.active[data-tipo="INGRESO"] {
+  background: linear-gradient(135deg, #0a1e3c, #1a365d);
+}
+
+.filtroDireccionBtn.active[data-tipo="EGRESO"] {
+  background: linear-gradient(135deg, #991b1b, #7f1d1d);
+}
+
+.filtroDireccionBtn.active[data-tipo="TODOS"] {
+  background: linear-gradient(135deg, #1e293b, #334155);
+}
+
+.filtroDireccionBtn:focus-visible {
+  outline: 2px solid var(--navy, #0a1e3c);
+  outline-offset: 2px;
+}
+
+.filtroDireccionBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 10px;
+  font-weight: 700;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
+.filtroDireccionBtn.active .filtroDireccionBadge {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.filtroDireccionBtn:not(.active) .filtroDireccionBadge {
+  background: var(--gray-border, #e2e8f0);
+  color: var(--gray-text, #64748b);
+}
+
+/* ============================================
+   🏦 BANCO BADGE - Header (solo logo, sin texto)
+   ============================================ */
+
+.bancoBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 4px;
+  border: 1px solid var(--gray-border, #e2e8f0);
+  border-radius: 16px;
+  background: var(--white, #ffffff);
+  margin-top: 4px;
+  transition: all 0.2s ease;
+}
+
+.bancoBadge:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.bancosBadgeContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.bancoLogo {
   width: 20px;
   height: 20px;
   border-radius: 50%;
   object-fit: contain;
-  background: var(--white);
-  flex-shrink: 0;
-}
-
-.clienteCardIconDefault {
-  color: var(--gray-text);
-  flex-shrink: 0;
-}
-
-/* ✅ Cliente Card - Sin Identificar */
-.clienteCardIconSinId {
-  color: #f59e0b;
-  flex-shrink: 0;
-}
-
-.clienteNombreSinId {
-  color: #f59e0b;
-}
-
-/* ✅ Drawer Iconos */
-.drawerIcon {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: contain;
-  background: var(--white);
-  flex-shrink: 0;
-}
-
-.drawerIconSinId {
-  color: #f59e0b;
-  flex-shrink: 0;
-}
-
-.drawerIconDefault {
-  color: var(--gray-text);
-  flex-shrink: 0;
-}
-
-.drawerTitleSinId {
-  color: #f59e0b;
-}
-
-/* ✅ Drawer - Botones de copiar */
-.drawerCopyBtn {
-  background: none;
-  border: none;
-  color: var(--gray-text);
-  cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.drawerCopyBtn:hover {
-  background: var(--gray-bg);
-  color: var(--navy);
-}
-
-.drawerSectionHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.drawerCopyAllBtn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: 1px solid var(--gray-border);
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-family: var(--font-ui);
-  color: var(--gray-text);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.drawerCopyAllBtn:hover {
-  border-color: var(--navy);
-  color: var(--navy);
-}
-
-.drawerPagoCopy {
-  background: none;
-  border: none;
-  color: var(--gray-text);
-  cursor: pointer;
+  background: var(--gray-bg, #f1f5f9);
   padding: 2px;
-  border-radius: 4px;
-  opacity: 0;
+  border: 1px solid var(--gray-border, #e2e8f0);
   transition: all 0.2s ease;
   flex-shrink: 0;
 }
 
-.drawerPago:hover .drawerPagoCopy {
-  opacity: 1;
+.bancoLogo:hover {
+  transform: scale(1.15);
+  z-index: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.drawerPagoCopy:hover {
-  background: var(--gray-bg);
-  color: var(--navy);
-}
-
-.drawerEmpty {
-  padding: 20px;
+.bancoMulti {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gray-text, #64748b);
+  background: var(--gray-bg, #f1f5f9);
+  padding: 0 6px;
+  border-radius: 10px;
+  min-width: 18px;
   text-align: center;
-  color: var(--gray-text);
-  font-size: 14px;
 }
 
-.drawerToast {
-  padding: 8px 16px;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+.bancoMulti {
+  font-size: 9px;
+  color: var(--gray-text, #64748b);
+  background: var(--gray-bg, #f1f5f9);
+  padding: 0 4px;
   border-radius: 8px;
-  margin-bottom: 16px;
-  font-size: 13px;
-  color: #10b981;
-  text-align: center;
-  animation: fadeIn 0.3s ease;
+  font-weight: 600;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ============================================
+   📱 RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .kpiGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .container { padding: 20px 16px; }
+  .header { flex-direction: column; align-items: stretch; }
+  .headerLeft { gap: 12px; }
+  .headerIcon { width: 40px; height: 40px; }
+  .headerIcon svg { width: 20px; height: 20px; }
+  .titulo { font-size: 22px; }
+  .headerActions { justify-content: flex-start; }
+  .kpiGrid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi { padding: 10px 14px; }
+  .kpiValue { font-size: 15px; }
+  .searchSection { flex-direction: column; align-items: stretch; }
+  .searchContainer { max-width: 100%; }
+  .clientesGrid { grid-template-columns: 1fr; }
+  .drawer { max-width: 100%; padding: 16px; }
+  .drawerStats { grid-template-columns: 1fr; }
+  
+  .drawerBancoLogo {
+    width: 32px;
+    height: 32px;
+    padding: 3px;
+  }
+  
+  .drawerHeaderRight {
+    gap: 8px;
+  }
+  
+  .bancoLogo {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .filtroDireccion {
+    padding: 3px;
+    border-radius: 8px;
+    gap: 3px;
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+
+  .filtroDireccionBtn {
+    flex: 1;
+    min-width: 0;
+    padding: 5px 8px;
+    font-size: 11px;
+    min-height: 28px;
+    border-radius: 6px;
+  }
+
+  .filtroDireccionBtn svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .filtroDireccionBadge {
+    min-width: 16px;
+    height: 16px;
+    font-size: 9px;
+    padding: 0 4px;
+  }
+  
+  .footerBancos {
+    font-size: 10px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .kpiGrid { grid-template-columns: 1fr; }
+  .tabla th, .tabla td { padding: 6px 8px; font-size: 11px; }
+  .clienteCell { min-width: 100px; }
+  .dropZone { padding: 32px 16px; }
+  .uploadIcon { width: 56px; height: 56px; }
+  .uploadIcon svg { width: 32px; height: 32px; }
+  
+  .drawerBancoLogo {
+    width: 28px;
+    height: 28px;
+    padding: 2px;
+  }
+  
+  .bancoLogo {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .filtroDireccionBtn {
+    font-size: 10px;
+    padding: 4px 6px;
+    min-height: 24px;
+  }
+
+  .filtroDireccionBtn svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .filtroDireccionBadge {
+    min-width: 14px;
+    height: 14px;
+    font-size: 8px;
+  }
+}
+
+/* ============================================
+   🎨 ANIMACIONES ADICIONALES
+   ============================================ */
+
+@keyframes filtroEntrada {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.filtroDireccion {
+  animation: filtroEntrada 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.filtroDireccionBtn:active:not(.active) {
+  transform: scale(0.94);
+  transition-duration: 0.08s;
+}
+
+.filtroDireccionBtn.active:active {
+  transform: scale(0.96);
 }

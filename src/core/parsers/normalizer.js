@@ -1,5 +1,6 @@
 ﻿// ═══════════════════════════════════════════
 // NORMALIZER.JS - Funciones de limpieza y normalización
+// Compartido por todos los parsers de extractos bancarios.
 // ═══════════════════════════════════════════
 
 /**
@@ -12,28 +13,25 @@
  */
 export function parsearValorCOP(valorStr) {
   if (!valorStr || typeof valorStr !== 'string') return 0;
-  
+
   let limpio = valorStr.trim();
-  
+
   // Eliminar símbolo de peso y espacios
   limpio = limpio.replace(/\$\s*/g, '');
-  
+
   // Detectar si es formato colombiano (puntos para miles, coma para decimales)
   // o formato internacional (comas para miles, punto para decimales)
   const tieneComaDecimal = /,\d{2}$/.test(limpio);
   const tienePuntoDecimal = /\.\d{2}$/.test(limpio);
-  
+
   if (tieneComaDecimal) {
-    // Formato: 1.000.000,00 → eliminar puntos de miles, reemplazar coma decimal
     limpio = limpio.replace(/\./g, '').replace(',', '.');
   } else if (tienePuntoDecimal) {
-    // Formato: 1,000,000.00 → eliminar comas de miles
     limpio = limpio.replace(/,/g, '');
   } else {
-    // Sin decimales: eliminar ambos separadores y tratar como entero
     limpio = limpio.replace(/[.,]/g, '');
   }
-  
+
   const numero = parseFloat(limpio);
   return isNaN(numero) ? 0 : numero;
 }
@@ -43,19 +41,13 @@ export function parsearValorCOP(valorStr) {
  */
 export function limpiarDescripcion(descripcion) {
   if (!descripcion) return '';
-  
+
   let limpia = descripcion.trim();
-  
-  // Eliminar espacios múltiples
   limpia = limpia.replace(/\s+/g, ' ');
-  
-  // Eliminar caracteres especiales al inicio y final
   limpia = limpia.replace(/^[^\wáéíóúñÁÉÍÓÚÑ]+/, '');
   limpia = limpia.replace(/[^\wáéíóúñÁÉÍÓÚÑ]+$/, '');
-  
-  // Normalizar texto a mayúsculas
   limpia = limpia.toUpperCase();
-  
+
   return limpia;
 }
 
@@ -64,54 +56,26 @@ export function limpiarDescripcion(descripcion) {
  */
 export function esMovimientoGenerico(descripcion) {
   if (!descripcion) return true;
-  
+
   const descUpper = descripcion.toUpperCase();
-  
-  // Palabras que indican movimiento genérico/sin cliente
+
   const palabrasGenericas = [
-    'ABONO INTERESES',
-    'CUOTA MANEJO',
-    'COMISION',
-    'IMPUESTO',
-    'RETENCION',
-    'GRAVAMEN',
-    'IVA',
-    'RETEICA',
-    'RETEFUENTE',
-    '4X1000',
-    'CUATRO POR MIL',
-    'SEGURO',
-    'TRANSFERENCIA INTERNA',
-    'TRASLADO',
-    'AJUSTE',
-    'NOTA DEBITO',
-    'NOTA CREDITO',
-    'INTERESES',
-    'RENDIMIENTOS',
-    'PAGO AUTOMATICO',
-    'DEBITO AUTOMATICO',
-    'PAGO TARJETA',
-    'AVANCE',
-    'COMPRA',
-    'RETIRO',
-    'CONSIGNACION',
-    'DEPOSITO',
+    'ABONO INTERESES', 'CUOTA MANEJO', 'COMISION', 'IMPUESTO',
+    'RETENCION', 'GRAVAMEN', 'IVA', 'RETEICA', 'RETEFUENTE',
+    '4X1000', 'CUATRO POR MIL', 'SEGURO', 'TRANSFERENCIA INTERNA',
+    'TRASLADO', 'AJUSTE', 'NOTA DEBITO', 'NOTA CREDITO', 'INTERESES',
+    'RENDIMIENTOS', 'PAGO AUTOMATICO', 'DEBITO AUTOMATICO',
+    'PAGO TARJETA', 'AVANCE', 'COMPRA', 'RETIRO', 'CONSIGNACION', 'DEPOSITO',
   ];
-  
-  // Si la descripción contiene alguna palabra genérica y es corta
+
   if (descUpper.length < 50) {
     for (const palabra of palabrasGenericas) {
-      if (descUpper.includes(palabra)) {
-        return true;
-      }
+      if (descUpper.includes(palabra)) return true;
     }
   }
-  
-  // Si la descripción es muy corta (menos de 10 caracteres)
-  if (descUpper.length < 10) {
-    return true;
-  }
-  
+
+  if (descUpper.length < 10) return true;
+
   return false;
 }
 
@@ -120,33 +84,22 @@ export function esMovimientoGenerico(descripcion) {
  */
 export function extraerNombreCliente(descripcion) {
   if (!descripcion) return null;
-  
+
   const descUpper = descripcion.toUpperCase().trim();
-  
-  // Patrones comunes en extractos bancarios colombianos
+
   const patrones = [
-    // Transferencias desde otros bancos
     /TRANSF\s+(?:DE|DESDE|RECIBIDA\s+DE)\s+([A-ZÁÉÍÓÚÑ\s]+?)(?:\s+(?:POR|NIT|CC|$|REF|VALOR))/i,
-    
-    // Pago de nómina o proveedores
     /PAGO\s+(?:DE|A|RECIBIDO\s+DE)\s+([A-ZÁÉÍÓÚÑ\s]+?)(?:\s+(?:POR|NIT|CC|$|REF|FACTURA))/i,
-    
-    // Consignación o depósito
     /(?:CONSIGNACION|DEPOSITO)\s+(?:DE|DESDE)\s+([A-ZÁÉÍÓÚÑ\s]+?)(?:\s+(?:NIT|CC|$|REF))/i,
-    
-    // Nombre después de "DE:" o "PARA:"
     /(?:DE|PARA):\s*([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s]{2,40}?)(?:\s+(?:NIT|CC|$|REF|VALOR))/i,
-    
-    // Nombre propio (2-4 palabras en mayúscula)
     /\b([A-ZÁÉÍÓÚÑ]{3,20}\s+[A-ZÁÉÍÓÚÑ]{3,20}(?:\s+[A-ZÁÉÍÓÚÑ]{3,20})?)\b/,
   ];
-  
+
   for (const patron of patrones) {
     const match = descUpper.match(patron);
     if (match && match[1]) {
       const nombre = match[1].trim();
-      
-      // Validar que no sea una palabra genérica
+
       const palabrasInvalidas = [
         'BANCO', 'BANCOLOMBIA', 'BBVA', 'DAVIVIENDA', 'ITAU',
         'TRANSFERENCIA', 'PAGO', 'ABONO', 'INTERES', 'TOTAL',
@@ -155,17 +108,17 @@ export function extraerNombreCliente(descripcion) {
         'CUENTA', 'AHORROS', 'CORRIENTE', 'NIT', 'CEDULA',
         'REFERENCIA', 'COMPROBANTE', 'OFICINA', 'CIUDAD',
       ];
-      
-      const esValido = !palabrasInvalidas.some(p => 
+
+      const esValido = !palabrasInvalidas.some(p =>
         nombre === p || nombre.startsWith(p + ' ')
       );
-      
+
       if (esValido && nombre.length >= 3 && nombre.length <= 60) {
         return nombre;
       }
     }
   }
-  
+
   return null;
 }
 
@@ -174,7 +127,6 @@ export function extraerNombreCliente(descripcion) {
  */
 export function extraerNIT(descripcion) {
   if (!descripcion) return null;
-  
   const match = descripcion.match(/\b(\d{8,10})\b/);
   return match ? match[1] : null;
 }
@@ -184,39 +136,35 @@ export function extraerNIT(descripcion) {
  */
 export function normalizarFecha(fechaStr) {
   if (!fechaStr) return null;
-  
+
   const meses = {
     'ENE': '01', 'FEB': '02', 'MAR': '03', 'ABR': '04',
     'MAY': '05', 'JUN': '06', 'JUL': '07', 'AGO': '08',
     'SEP': '09', 'OCT': '10', 'NOV': '11', 'DIC': '12'
   };
-  
-  let dia, mes, anio = new Date().getFullYear().toString();
-  
-  // DD/MM/AAAA
+
+  let anio = new Date().getFullYear().toString();
+
   let match = fechaStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (match) {
     return `${match[1].padStart(2, '0')}/${match[2].padStart(2, '0')}/${match[3]}`;
   }
-  
-  // DD/MM
+
   match = fechaStr.match(/^(\d{1,2})\/(\d{1,2})$/);
   if (match) {
     return `${match[1].padStart(2, '0')}/${match[2].padStart(2, '0')}/${anio}`;
   }
-  
-  // AAAA-MM-DD
+
   match = fechaStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (match) {
     return `${match[3]}/${match[2]}/${match[1]}`;
   }
-  
-  // DD MMM AAAA
+
   match = fechaStr.match(/^(\d{1,2})\s+(ENE|FEB|MAR|ABR|MAY|JUN|JUL|AGO|SEP|OCT|NOV|DIC)\s+(\d{4})$/i);
   if (match) {
     return `${match[1].padStart(2, '0')}/${meses[match[2].toUpperCase()]}/${match[3]}`;
   }
-  
+
   return fechaStr;
 }
 
@@ -225,32 +173,13 @@ export function normalizarFecha(fechaStr) {
  */
 export function calcularConfianzaMovimiento(movimiento) {
   let puntuacion = 0;
-  
-  // Fecha válida
-  if (movimiento.fecha && movimiento.fecha.length >= 5) {
-    puntuacion += 25;
-  }
-  
-  // Valor numérico
-  if (movimiento.valor && !isNaN(movimiento.valor) && movimiento.valor !== 0) {
-    puntuacion += 25;
-  }
-  
-  // Descripción significativa
-  if (movimiento.descripcion && movimiento.descripcion.length > 5) {
-    puntuacion += 20;
-  }
-  
-  // Cliente identificado
-  if (movimiento.nombreCliente) {
-    puntuacion += 20;
-  }
-  
-  // NIT detectado
-  if (movimiento.nit) {
-    puntuacion += 10;
-  }
-  
+
+  if (movimiento.fecha && movimiento.fecha.length >= 5) puntuacion += 25;
+  if (movimiento.valor && !isNaN(movimiento.valor) && movimiento.valor !== 0) puntuacion += 25;
+  if (movimiento.descripcion && movimiento.descripcion.length > 5) puntuacion += 20;
+  if (movimiento.nombreCliente) puntuacion += 20;
+  if (movimiento.nit) puntuacion += 10;
+
   return Math.min(100, puntuacion);
 }
 
@@ -268,30 +197,20 @@ export function clasificarMovimiento(valor) {
  */
 export function esExtractoBancario(texto) {
   if (!texto) return false;
-  
+
   const textoUpper = texto.toUpperCase();
-  
+
   const indicadores = [
-    'EXTRACTO',
-    'ESTADO DE CUENTA',
-    'MOVIMIENTOS',
-    'CARTOLA',
-    'TOTAL ABONOS',
-    'TOTAL CARGOS',
-    'SALDO ANTERIOR',
-    'SALDO ACTUAL',
-    'FECHA',
-    'DESCRIPCION',
-    'VALOR',
+    'EXTRACTO', 'ESTADO DE CUENTA', 'MOVIMIENTOS', 'CARTOLA',
+    'TOTAL ABONOS', 'TOTAL CARGOS', 'SALDO ANTERIOR', 'SALDO ACTUAL',
+    'FECHA', 'DESCRIPCION', 'VALOR',
   ];
-  
+
   let coincidencias = 0;
   for (const indicador of indicadores) {
-    if (textoUpper.includes(indicador)) {
-      coincidencias++;
-    }
+    if (textoUpper.includes(indicador)) coincidencias++;
   }
-  
+
   return coincidencias >= 2;
 }
 

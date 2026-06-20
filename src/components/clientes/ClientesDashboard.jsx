@@ -9,8 +9,6 @@ import {
   Download,
   Building2,
   Clock,
-  ChevronDown,
-  ChevronUp,
   AlertCircle,
   Eye,
   Trash2,
@@ -19,15 +17,27 @@ import {
   HelpCircle,
   RotateCcw,
   Copy,
+  ArrowUp,
+  ArrowDown,
+  Layers,
+  Banknote,
+  CheckCircle,
 } from 'lucide-react';
-import { parsearExtractoPDF } from '../../core/parsers/parserBancolombia';
-import { agruparPorCliente, calcularEstadisticasGlobales } from '../../core/analytics/clientesAnalytics';
+import { parseDocumento, ErrorFormatoNoReconocido } from '@/core/parsers/parseDocumento.js';
+import { agruparPorCliente, calcularEstadisticasGlobales, obtenerMovimientosDeCliente } from '../../core/analytics/clientesAnalytics';
 import { buscarClientes } from '../../core/utils/fuzzySearch';
 import { guardarDatos, obtenerDatos, agregarActividad } from '../../infra/storage/localStorage.service';
 import { formatCOP, formatNumber } from '../../core/utils/formatUtils';
 import styles from './ClientesDashboard.module.css';
 
-// ✅ Mapeo de iconos por cliente
+// ✅ MAPEO DE LOGOS POR BANCO
+const BANCO_LOGOS = {
+  'Bancolombia': 'https://www.bancolombia.com/wcm/connect/b8e4c3f2-36a9-497d-a125-ac04f83b0bf8/LogoBancolombia.png?MOD=AJPERES',
+  'BBVA': 'https://w7.pngwing.com/pngs/605/74/png-transparent-banco-bilbao-vizcaya-argentaria-logo-bank-business-river-club-blue-text-trademark.png',
+  // Agregar más bancos aquí
+};
+
+// ✅ MAPEO DE ICONOS POR CLIENTE (existente)
 const CLIENTE_ICONS = {
   'NEQUI': 'https://cdn.brandfetch.io/idVKd5RHgI/w/400/h/400/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1781708737156',
   'DAVIPLATA': 'https://cdn.brandfetch.io/idYUaU0ImR/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1772768145632',
@@ -40,7 +50,19 @@ const CLIENTE_ICONS = {
   'DANOSA ANDINA S': 'https://www.danosa.com/es-co/wp-content/uploads/sites/8/2026/03/FAVICON_logo_danosa_nuevo_azul.svg',
 };
 
-// ✅ Función para obtener icono de cliente
+// ✅ Función para obtener el logo del banco
+function getBancoLogo(bancoNombre) {
+  if (!bancoNombre) return null;
+  if (BANCO_LOGOS[bancoNombre]) return BANCO_LOGOS[bancoNombre];
+  for (const [key, url] of Object.entries(BANCO_LOGOS)) {
+    if (bancoNombre.includes(key) || key.includes(bancoNombre)) {
+      return url;
+    }
+  }
+  return null;
+}
+
+// ✅ Función para obtener icono de cliente (existente)
 function getClienteIcon(clienteNombre) {
   if (!clienteNombre) return null;
   const normalized = clienteNombre.toUpperCase().trim();
@@ -145,22 +167,42 @@ function ClienteCard({ cliente, onClick, isSelected }) {
   );
 }
 
-// ✅ Drawer de detalles del cliente
-function ClienteDrawer({ cliente, movimientos, onClose }) {
+// 🔄 CAMBIO: Drawer - muestra el logo del banco correcto
+function ClienteDrawer({ cliente, movimientos, onClose, filtroDireccion, detecciones }) {
   const [toastMessage, setToastMessage] = useState(null);
   
   const pagosCliente = useMemo(() => {
-    let pagos;
-    if (cliente.nombre && !esSinIdentificar(cliente.nombre)) {
-      pagos = movimientos.filter(m => m.nombreCliente === cliente.nombre);
-    } else {
-      pagos = movimientos.filter(m => !m.nombreCliente || m.nombreCliente === 'Sin identificar');
-    }
-    return pagos.filter(m => m.valor > 0);
+    return obtenerMovimientosDeCliente(cliente, movimientos);
   }, [movimientos, cliente]);
 
   const iconUrl = getClienteIcon(cliente.nombre);
   const esSinId = esSinIdentificar(cliente.nombre);
+
+  // 🔄 CAMBIO: Obtener el banco del cliente basado en el primer movimiento
+  const bancoOrigen = useMemo(() => {
+    if (!detecciones || detecciones.length === 0) return null;
+    if (pagosCliente.length === 0) return null;
+    
+    // Tomar el banco de la detección del primer movimiento
+    // Asumimos que el primer movimiento tiene un campo que indica el banco
+    const primerMovimiento = pagosCliente[0];
+    if (primerMovimiento && primerMovimiento.banco) {
+      return primerMovimiento.banco;
+    }
+    
+    // Fallback: usar el primer banco detectado
+    return detecciones[0]?.banco || null;
+  }, [detecciones, pagosCliente]);
+
+  const logoBanco = bancoOrigen ? getBancoLogo(bancoOrigen) : null;
+
+  // 🔄 CAMBIO: Label dinámico según filtro
+  const getTotalLabel = () => {
+    if (filtroDireccion === 'INGRESO') return 'Total recaudado';
+    if (filtroDireccion === 'EGRESO') return 'Total pagado';
+    if (filtroDireccion === 'TODOS') return 'Balance neto';
+    return 'Total';
+  };
 
   const handleCopyNombre = useCallback(() => {
     navigator.clipboard.writeText(cliente.nombre).then(() => {
@@ -209,9 +251,22 @@ function ClienteDrawer({ cliente, movimientos, onClose }) {
               <Copy size={14} />
             </button>
           </div>
-          <button className={styles.drawerClose} onClick={onClose}>
-            <X size={20} />
-          </button>
+          <div className={styles.drawerHeaderRight}>
+            {/* 🔄 CAMBIO: Mostrar logo del banco en el drawer (más grande) */}
+            {logoBanco && (
+              <img 
+                src={logoBanco} 
+                alt={bancoOrigen} 
+                className={styles.drawerBancoLogo}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            )}
+            <button className={styles.drawerClose} onClick={onClose}>
+              <X size={20} />
+            </button>
+          </div>
         </div>
         
         {toastMessage && (
@@ -222,11 +277,11 @@ function ClienteDrawer({ cliente, movimientos, onClose }) {
         
         <div className={styles.drawerStats}>
           <div className={styles.drawerStat}>
-            <span className={styles.drawerStatLabel}>Total recaudado</span>
+            <span className={styles.drawerStatLabel}>{getTotalLabel()}</span>
             <span className={styles.drawerStatValue}>{formatCOP(cliente.total)}</span>
           </div>
           <div className={styles.drawerStat}>
-            <span className={styles.drawerStatLabel}>Pagos</span>
+            <span className={styles.drawerStatLabel}>Movimientos</span>
             <span className={styles.drawerStatValue}>{cliente.cantidad}</span>
           </div>
           <div className={styles.drawerStat}>
@@ -237,13 +292,13 @@ function ClienteDrawer({ cliente, movimientos, onClose }) {
 
         <div className={styles.drawerSection}>
           <div className={styles.drawerSectionHeader}>
-            <h4 className={styles.drawerSectionTitle}>Historial de pagos</h4>
+            <h4 className={styles.drawerSectionTitle}>Historial de movimientos</h4>
             {pagosCliente.length > 0 && (
               <button 
                 className={styles.drawerCopyAllBtn} 
                 onClick={handleCopyPagos}
-                aria-label="Copiar todos los pagos"
-                title="Copiar todos los pagos"
+                aria-label="Copiar todos los movimientos"
+                title="Copiar todos los movimientos"
               >
                 <Copy size={14} />
                 Copiar todo
@@ -263,15 +318,15 @@ function ClienteDrawer({ cliente, movimientos, onClose }) {
                       e.stopPropagation();
                       handleCopyPago(pago);
                     }}
-                    aria-label="Copiar este pago"
-                    title="Copiar pago"
+                    aria-label="Copiar este movimiento"
+                    title="Copiar movimiento"
                   >
                     <Copy size={12} />
                   </button>
                 </div>
               ))
             ) : (
-              <div className={styles.drawerEmpty}>No hay pagos registrados</div>
+              <div className={styles.drawerEmpty}>No hay movimientos registrados</div>
             )}
           </div>
         </div>
@@ -283,6 +338,8 @@ function ClienteDrawer({ cliente, movimientos, onClose }) {
 export default function ClientesDashboard({ onClientesUpdate }) {
   const [extractos, setExtractos] = useState([]);
   const [movimientos, setMovimientos] = useState([]);
+  const [metadatasExtractos, setMetadatasExtractos] = useState([]);
+  const [detecciones, setDetecciones] = useState([]);
   const [clientesData, setClientesData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -293,12 +350,40 @@ export default function ClientesDashboard({ onClientesUpdate }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
+  const [filtroDireccion, setFiltroDireccion] = useState('INGRESO');
   const inputRef = useRef(null);
-  const hasLoaded = useRef(false); // ✅ Prevenir loop infinito
+  const hasLoaded = useRef(false);
+
+  // 🔄 CAMBIO: Filtro de movimientos por dirección
+  const movimientosFiltrados = useMemo(() => {
+    if (filtroDireccion === 'TODOS') {
+      return movimientos;
+    }
+    if (filtroDireccion === 'INGRESO') {
+      return movimientos.filter(m => m.direccion === 'INGRESO' || m.direccion === undefined);
+    }
+    if (filtroDireccion === 'EGRESO') {
+      return movimientos.filter(m => m.direccion === 'EGRESO');
+    }
+    return movimientos;
+  }, [movimientos, filtroDireccion]);
+
+  // 🔄 CAMBIO: Verificar si hay egresos para mostrar el selector
+  const hayEgresos = useMemo(() => {
+    return movimientos.some(m => m.direccion === 'EGRESO');
+  }, [movimientos]);
+
+  // Contadores para los badges del filtro
+  const conteoIngresos = useMemo(() => {
+    return movimientos.filter(m => m.direccion === 'INGRESO' || m.direccion === undefined).length;
+  }, [movimientos]);
+
+  const conteoEgresos = useMemo(() => {
+    return movimientos.filter(m => m.direccion === 'EGRESO').length;
+  }, [movimientos]);
 
   // ✅ Cargar datos guardados - SOLO UNA VEZ
   useEffect(() => {
-    // ✅ Evitar ejecución múltiple
     if (hasLoaded.current) return;
     
     const datos = obtenerDatos();
@@ -307,6 +392,7 @@ export default function ClientesDashboard({ onClientesUpdate }) {
       
       setMovimientos(datos.movimientos);
       setExtractos(datos.extractos || []);
+      setDetecciones(datos.detecciones || []);
       const clientes = agruparPorCliente(datos.movimientos);
       const sorted = [...clientes].sort((a, b) => b.total - a.total);
       const maxTotal = sorted[0]?.total || 1;
@@ -335,7 +421,7 @@ export default function ClientesDashboard({ onClientesUpdate }) {
     return () => window.removeEventListener('searchClient', handleSearch);
   }, [clienteSeleccionado]);
 
-  // ✅ Procesar archivos
+  // 🔄 CAMBIO: Procesar archivos con el nuevo parser
   const procesarArchivos = useCallback(async (files) => {
     if (!files || files.length === 0) return;
     
@@ -345,6 +431,8 @@ export default function ClientesDashboard({ onClientesUpdate }) {
     
     const todosMovimientos = [];
     const nombresArchivos = [];
+    const metadatas = [];
+    const deteccionesPorArchivo = [];
     
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -354,48 +442,73 @@ export default function ClientesDashboard({ onClientesUpdate }) {
       }
       
       try {
-        const movs = await parsearExtractoPDF(file);
+        const resultadoParse = await parseDocumento(file);
+        const movs = resultadoParse.movimientos;
+        const metadata = resultadoParse.metadata;
+        const deteccion = resultadoParse.deteccion;
+        
+        console.log('🔍 Detección:', deteccion);
+        
         if (movs.length > 0) {
-          todosMovimientos.push(...movs);
+          // 🔄 CAMBIO: Agregar el banco a cada movimiento
+          const movsConBanco = movs.map(m => ({
+            ...m,
+            banco: deteccion?.banco || 'Desconocido',
+          }));
+          todosMovimientos.push(...movsConBanco);
           nombresArchivos.push(file.name);
+          metadatas.push({ fileName: file.name, metadata });
+          deteccionesPorArchivo.push({
+            fileName: file.name,
+            banco: deteccion?.banco || 'Desconocido',
+            formato: deteccion?.formato || 'No identificado',
+            confianza: deteccion?.confianza || 0,
+          });
         }
       } catch (e) {
-        setError(`Error al leer "${file.name}": ${e.message}`);
+        if (e instanceof ErrorFormatoNoReconocido) {
+          setError(`No reconocemos el formato del extracto "${file.name}". Verifica que sea un PDF de un banco soportado.`);
+        } else {
+          setError(`Error al leer "${file.name}": ${e.message}`);
+        }
       }
       
       setProgress(Math.round(((i + 1) / files.length) * 100));
     }
     
     if (todosMovimientos.length === 0) {
-      setError('No se encontraron ingresos en los extractos subidos.');
+      setError('No se encontraron movimientos en los extractos subidos.');
       setIsLoading(false);
       return;
     }
     
     setMovimientos(todosMovimientos);
     setExtractos(nombresArchivos);
+    setMetadatasExtractos(metadatas);
+    setDetecciones(deteccionesPorArchivo);
+    
     const clientes = agruparPorCliente(todosMovimientos);
     const sorted = [...clientes].sort((a, b) => b.total - a.total);
     const maxTotal = sorted[0]?.total || 1;
     const clientesConRank = sorted.map((c, i) => ({ ...c, rank: i + 1, _maxTotal: maxTotal }));
     setClientesData(clientesConRank);
     
-    // ✅ Notificar a App.jsx con verificación
     if (onClientesUpdate) {
       onClientesUpdate(clientesConRank, todosMovimientos);
     }
     
-    const totalIngresos = todosMovimientos.reduce((s, m) => s + m.valor, 0);
+    const total = todosMovimientos.reduce((s, m) => s + m.valor, 0);
     guardarDatos({
       movimientos: todosMovimientos,
       extractos: nombresArchivos,
+      detecciones: deteccionesPorArchivo,
       pdfsCargados: nombresArchivos.length,
       clientesEncontrados: clientes.length,
-      totalRecaudado: totalIngresos,
+      totalRecaudado: total,
       movimientosProcesados: todosMovimientos.length,
     });
     
-    agregarActividad(`Procesados ${todosMovimientos.length} movimientos de ${nombresArchivos.length} extractos`, 'FileText');
+    agregarActividad(`Procesados ${todosMovimientos.length} movimientos de ${nombresArchivos.length} extractos (${deteccionesPorArchivo.map(d => d.banco).join(', ')})`, 'FileText');
     setIsLoading(false);
   }, [onClientesUpdate]);
 
@@ -430,17 +543,19 @@ export default function ClientesDashboard({ onClientesUpdate }) {
       movimientos: [...movimientos],
       clientesData: [...clientesData],
       extractos: [...extractos],
+      detecciones: [...detecciones],
     };
     setPendingDelete(backup);
     
     setMovimientos([]);
     setClientesData([]);
     setExtractos([]);
+    setMetadatasExtractos([]);
+    setDetecciones([]);
     setSearchTerm('');
     localStorage.removeItem('popCarteraData');
     agregarActividad('Datos limpiados', 'Trash2');
     
-    // ✅ Notificar a App.jsx con verificación
     if (onClientesUpdate) {
       onClientesUpdate([], []);
     }
@@ -449,7 +564,7 @@ export default function ClientesDashboard({ onClientesUpdate }) {
       message: 'Datos eliminados correctamente',
       action: 'Deshacer',
     });
-  }, [clientesData, movimientos, extractos, onClientesUpdate]);
+  }, [clientesData, movimientos, extractos, detecciones, onClientesUpdate]);
 
   const handleUndoDelete = useCallback(() => {
     if (!pendingDelete) return;
@@ -457,8 +572,8 @@ export default function ClientesDashboard({ onClientesUpdate }) {
     setMovimientos(pendingDelete.movimientos);
     setClientesData(pendingDelete.clientesData);
     setExtractos(pendingDelete.extractos);
+    setDetecciones(pendingDelete.detecciones || []);
     
-    // ✅ Notificar a App.jsx con verificación
     if (onClientesUpdate) {
       onClientesUpdate(pendingDelete.clientesData, pendingDelete.movimientos);
     }
@@ -466,6 +581,7 @@ export default function ClientesDashboard({ onClientesUpdate }) {
     guardarDatos({
       movimientos: pendingDelete.movimientos,
       extractos: pendingDelete.extractos,
+      detecciones: pendingDelete.detecciones || [],
       pdfsCargados: pendingDelete.extractos.length,
       clientesEncontrados: pendingDelete.clientesData.length,
       totalRecaudado: pendingDelete.movimientos.reduce((s, m) => s + m.valor, 0),
@@ -487,7 +603,7 @@ export default function ClientesDashboard({ onClientesUpdate }) {
     const XLSX = await import('xlsx');
     const filas = clientesData.map(c => ({
       'Cliente': c.nombre,
-      'Total recaudado': c.total,
+      'Total': c.total,
       'Transacciones': c.cantidad,
       'Promedio': Math.round(c.total / c.cantidad),
       'Primer pago': c.primerPago || '',
@@ -500,14 +616,46 @@ export default function ClientesDashboard({ onClientesUpdate }) {
     agregarActividad('Reporte de clientes exportado', 'Download');
   }, [clientesData]);
 
+  // 🔄 CAMBIO: Usar movimientosFiltrados para los cálculos
   const clientesFiltrados = useMemo(() => {
+    const clientes = agruparPorCliente(movimientosFiltrados);
+    const sorted = [...clientes].sort((a, b) => b.total - a.total);
+    const maxTotal = sorted[0]?.total || 1;
+    const clientesConRank = sorted.map((c, i) => ({ ...c, rank: i + 1, _maxTotal: maxTotal }));
     return searchTerm.trim() 
-      ? buscarClientes(clientesData, searchTerm)
-      : clientesData;
-  }, [clientesData, searchTerm]);
+      ? buscarClientes(clientesConRank, searchTerm)
+      : clientesConRank;
+  }, [movimientosFiltrados, searchTerm]);
 
-  const estadisticas = useMemo(() => calcularEstadisticasGlobales(clientesData), [clientesData]);
-  const totalIngresos = movimientos.reduce((s, m) => s + m.valor, 0);
+  // 🔄 CAMBIO: Estadísticas basadas en movimientos filtrados
+  const estadisticas = useMemo(() => calcularEstadisticasGlobales(clientesFiltrados), [clientesFiltrados]);
+  const totalIngresos = movimientosFiltrados.reduce((s, m) => s + m.valor, 0);
+
+  // 🔄 CAMBIO: Label dinámico para el KPI
+  const getKpiLabel = () => {
+    if (filtroDireccion === 'INGRESO') return 'Total recaudado';
+    if (filtroDireccion === 'EGRESO') return 'Total pagado';
+    if (filtroDireccion === 'TODOS') return 'Balance neto';
+    return 'Total';
+  };
+
+  // 🔄 CAMBIO: Función para cambiar filtro
+  const handleFiltroChange = (filtro) => {
+    setFiltroDireccion(filtro);
+  };
+
+  // 🔄 CAMBIO: Determinar el banco principal (el que tiene más movimientos)
+  const bancoPrincipal = useMemo(() => {
+    if (detecciones.length === 0) return null;
+    const bancoCount = {};
+    detecciones.forEach(d => {
+      bancoCount[d.banco] = (bancoCount[d.banco] || 0) + 1;
+    });
+    const sorted = Object.entries(bancoCount).sort((a, b) => b[1] - a[1]);
+    return sorted[0]?.[0] || null;
+  }, [detecciones]);
+
+  const logoBanco = bancoPrincipal ? getBancoLogo(bancoPrincipal) : null;
 
   return (
     <div className={styles.container}>
@@ -520,48 +668,114 @@ export default function ClientesDashboard({ onClientesUpdate }) {
         />
       )}
 
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <div className={styles.headerIcon}>
-            <Users size={28} />
-          </div>
-          <div>
-            <h1 className={styles.titulo}>Reporte de Clientes</h1>
-            <p className={styles.sub}>
-              {clientesData.length > 0 
-                ? `${clientesData.length} clientes · ${movimientos.length} movimientos · ${extractos.length} extractos`
-                : 'Sube uno o varios extractos bancarios para analizar tus clientes'}
-            </p>
-          </div>
-        </div>
-        <div className={styles.headerActions}>
-          {clientesData.length > 0 && (
-            <>
-              <button 
-                className={`${styles.btnViewMode} ${viewMode === 'cards' ? styles.active : ''}`}
-                onClick={() => setViewMode('cards')}
-                aria-label="Vista tarjetas"
-              >
-                <LayoutGrid size={16} />
-              </button>
-              <button 
-                className={`${styles.btnViewMode} ${viewMode === 'table' ? styles.active : ''}`}
-                onClick={() => setViewMode('table')}
-                aria-label="Vista tabla"
-              >
-                <List size={16} />
-              </button>
-              <button className={styles.btnExportar} onClick={handleExportar}>
-                <Download size={16} />
-                <span>Exportar</span>
-              </button>
-              <button className={styles.btnLimpiar} onClick={handleLimpiar}>
-                <Trash2 size={16} />
-              </button>
-            </>
+    <div className={styles.header}>
+  <div className={styles.headerLeft}>
+    <div className={styles.headerIcon}>
+      <Users size={28} />
+    </div>
+    <div>
+      <h1 className={styles.titulo}>Reporte de Clientes</h1>
+      <p className={styles.sub}>
+        {clientesData.length > 0 
+          ? `${clientesData.length} clientes · ${movimientos.length} movimientos · ${extractos.length} extractos`
+          : 'Sube uno o varios extractos bancarios para analizar tus clientes'}
+      </p>
+      {/* 🔄 CAMBIO: Mostrar TODOS los logos de bancos en el header */}
+      {detecciones.length > 0 && (
+        <div className={styles.bancosBadgeContainer}>
+          {detecciones.map((d, index) => {
+            const logo = getBancoLogo(d.banco);
+            if (!logo) return null;
+            return (
+              <img 
+                key={index}
+                src={logo} 
+                alt={d.banco} 
+                className={styles.bancoLogo}
+                title={d.banco}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            );
+          })}
+          {detecciones.length > 3 && (
+            <span className={styles.bancoMulti}>
+              +{detecciones.length - 3}
+            </span>
           )}
         </div>
-      </div>
+      )}
+    </div>
+  </div>
+  <div className={styles.headerActions}>
+    {clientesData.length > 0 && (
+      <>
+        {hayEgresos && (
+          <div className={styles.filtroDireccion}>
+            <button 
+              className={`${styles.filtroDireccionBtn} ${filtroDireccion === 'INGRESO' ? styles.active : ''}`}
+              data-tipo="INGRESO"
+              onClick={() => handleFiltroChange('INGRESO')}
+              aria-label="Mostrar solo ingresos"
+            >
+              <ArrowUp size={14} />
+              Ingresos
+              <span className={styles.filtroDireccionBadge}>
+                {conteoIngresos}
+              </span>
+            </button>
+            <button 
+              className={`${styles.filtroDireccionBtn} ${filtroDireccion === 'EGRESO' ? styles.active : ''}`}
+              data-tipo="EGRESO"
+              onClick={() => handleFiltroChange('EGRESO')}
+              aria-label="Mostrar solo egresos"
+            >
+              <ArrowDown size={14} />
+              Egresos
+              <span className={styles.filtroDireccionBadge}>
+                {conteoEgresos}
+              </span>
+            </button>
+            <button 
+              className={`${styles.filtroDireccionBtn} ${filtroDireccion === 'TODOS' ? styles.active : ''}`}
+              data-tipo="TODOS"
+              onClick={() => handleFiltroChange('TODOS')}
+              aria-label="Mostrar todos los movimientos"
+            >
+              <Layers size={14} />
+              Todos
+              <span className={styles.filtroDireccionBadge}>
+                {movimientos.length}
+              </span>
+            </button>
+          </div>
+        )}
+        <button 
+          className={`${styles.btnViewMode} ${viewMode === 'cards' ? styles.active : ''}`}
+          onClick={() => setViewMode('cards')}
+          aria-label="Vista tarjetas"
+        >
+          <LayoutGrid size={16} />
+        </button>
+        <button 
+          className={`${styles.btnViewMode} ${viewMode === 'table' ? styles.active : ''}`}
+          onClick={() => setViewMode('table')}
+          aria-label="Vista tabla"
+        >
+          <List size={16} />
+        </button>
+        <button className={styles.btnExportar} onClick={handleExportar}>
+          <Download size={16} />
+          <span>Exportar</span>
+        </button>
+        <button className={styles.btnLimpiar} onClick={handleLimpiar}>
+          <Trash2 size={16} />
+        </button>
+      </>
+    )}
+  </div>
+</div>
 
       {movimientos.length === 0 && !isLoading && (
         <div
@@ -590,6 +804,7 @@ export default function ClientesDashboard({ onClientesUpdate }) {
             <div className={styles.formatTags}>
               <span className={styles.formatTag}>PDF</span>
               <span className={styles.formatTag}>Bancolombia</span>
+              <span className={styles.formatTag}>BBVA</span>
               <span className={styles.formatTag}>Múltiples</span>
             </div>
           </div>
@@ -620,9 +835,9 @@ export default function ClientesDashboard({ onClientesUpdate }) {
       {movimientos.length > 0 && !isLoading && (
         <>
           <div className={styles.kpiGrid}>
-            <KPI icon={DollarSign} value={formatCOP(totalIngresos)} label="Total recaudado" color="blue" />
-            <KPI icon={Users} value={clientesData.length} label="Clientes activos" color="green" />
-            <KPI icon={FileText} value={movimientos.length} label="Transacciones" color="purple" />
+            <KPI icon={DollarSign} value={formatCOP(totalIngresos)} label={getKpiLabel()} color="blue" />
+            <KPI icon={Users} value={clientesFiltrados.length} label="Clientes activos" color="green" />
+            <KPI icon={FileText} value={movimientosFiltrados.length} label="Transacciones" color="purple" />
             <KPI icon={DollarSign} value={estadisticas.promedioPorCliente > 0 ? formatCOP(estadisticas.promedioPorCliente) : '—'} label="Ticket promedio" color="orange" />
           </div>
 
@@ -710,6 +925,17 @@ export default function ClientesDashboard({ onClientesUpdate }) {
               <FileText size={14} />
               {extractos.length} extracto{extractos.length > 1 ? 's' : ''} cargados
             </span>
+            {detecciones.length > 0 && (
+              <span className={styles.footerBancos}>
+                <Banknote size={14} />
+                {detecciones.map((d, i) => (
+                  <span key={i} className={styles.footerBanco}>
+                    {d.banco}
+                    {i < detecciones.length - 1 && ', '}
+                  </span>
+                ))}
+              </span>
+            )}
             <span>
               <Clock size={14} />
               Última actualización: {new Date().toLocaleString('es-CO')}
@@ -721,11 +947,12 @@ export default function ClientesDashboard({ onClientesUpdate }) {
       {drawerOpen && clienteSeleccionado && (
         <ClienteDrawer 
           cliente={clienteSeleccionado} 
-          movimientos={movimientos}
+          movimientos={movimientosFiltrados}
           onClose={handleCloseDrawer}
+          filtroDireccion={filtroDireccion}
+          detecciones={detecciones}
         />
       )}
     </div>
   );
 }
-
