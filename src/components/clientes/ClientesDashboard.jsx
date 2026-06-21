@@ -198,7 +198,7 @@ export default function ClientesDashboard({ onClientesUpdate }) {
       extractos: nombresArchivos,
       detecciones: deteccionesPorArchivo,
       pdfsCargados: nombresArchivos.length,
-      clientesEncontrados: clientes.length,
+      clientesEncontrados: clientesConRank.length,
       totalRecaudado: total,
       movimientosProcesados: todosMovimientos.length,
     });
