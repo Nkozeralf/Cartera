@@ -45,14 +45,11 @@ export default function Header({ pasoActual }) {
       </div>
 
       <div className={styles.headerContent}>
-        {/* Logo */}
+        {/* Logo - Placeholder Quadra */}
         <div className={styles.logoContainer}>
-          <img 
-            src="https://www.popagenciacreativa.com/page/page/include/img/logo.png" 
-            alt="POP Agencia" 
-            className={styles.logo}
-            loading="lazy"
-          />
+          <div className={styles.logoPlaceholder}>
+            Q
+          </div>
         </div>
 
         {/* Stepper */}

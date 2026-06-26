@@ -1,28 +1,211 @@
-@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&family=Lexend:wght@400;500;600;700&family=MuseoModerno:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ============================================
+   SISTEMA DE DESIGN TOKENS - FUENTE ÚNICA
+   ============================================ */
+
+/* 1. Tokens Base (Nunca cambian) */
 :root {
-  --navy: #002b64;
-  --navy-light: #003d8f;
-  --white: #ffffff;
-  --gray-bg: #f4f6f9;
-  --gray-border: #dde3ec;
-  --gray-text: #6b7a99;
-  --green: #00c46a;
-  --yellow: #f59e0b;
-  --red: #ef4444;
-  --font-display: 'Fjalla One', sans-serif;
+  /* Tipografía */
+  --font-display: 'Inter', sans-serif;
   --font-ui: 'Inter', sans-serif;
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-display: 'Inter', system-ui, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Espaciado */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* Transiciones */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.4s ease;
 }
 
+/* 2. Tokens Semánticos - DARK (por defecto) */
+:root,
+[data-theme="dark"] {
+  /* Superficies */
+  --color-bg-primary: #0b1220;
+  --color-bg-secondary: #0f1a2e;
+  --color-bg-tertiary: #15203a;
+  --color-bg-elevated: #1a2942;
+  --color-bg-inverse: #ffffff;
+
+  /* Texto */
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-tertiary: #94a3b8;
+  --color-text-inverse: #f1f5f9;
+
+  /* Iconos */
+  --color-icon: #94a3b8;
+  --color-icon-hover: #f1f5f9;
+
+  /* Bordes */
+  --color-border-primary: rgba(255, 255, 255, 0.08);
+  --color-border-secondary: rgba(255, 255, 255, 0.04);
+  --color-border-inverse: rgba(0, 0, 0, 0.08);
+
+  /* Semántica */
+  --color-success: #22c55e;
+  --color-success-bg: rgba(34, 197, 94, 0.1);
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245, 158, 11, 0.1);
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+  --color-info: #3b82f6;
+  --color-info-bg: rgba(59, 130, 246, 0.1);
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.5);
+
+  /* ============================================
+     BACKWARD COMPATIBILITY - DARK
+     ============================================ */
+  --navy: #eff2f7;
+  --navy-light: #d7dce4;
+  --gray-bg: #15203a;
+  --gray-border: rgba(255, 255, 255, 0.08);
+  --gray-text: #94a3b8;
+  --white: #1a2942;
+  --title-color: #f1f5f9;
+  --text-color: #94a3b8;
+}
+
+/* 2b. Tokens Semánticos - LIGHT */
+[data-theme="light"] {
+  /* Superficies */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-tertiary: #f1f5f9;
+  --color-bg-elevated: #ffffff;
+  --color-bg-inverse: #0b1220;
+
+  /* Texto */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #475569;
+  --color-text-inverse: #0f172a;
+
+  /* Iconos */
+  --color-icon: #475569;
+  --color-icon-hover: #0f172a;
+
+  /* Bordes */
+  --color-border-primary: rgba(0, 0, 0, 0.08);
+  --color-border-secondary: rgba(0, 0, 0, 0.04);
+  --color-border-inverse: rgba(255, 255, 255, 0.08);
+
+  /* Semántica */
+  --color-success: #16a34a;
+  --color-success-bg: rgba(22, 163, 74, 0.1);
+  --color-warning: #d97706;
+  --color-warning-bg: rgba(217, 119, 6, 0.1);
+  --color-error: #dc2626;
+  --color-error-bg: rgba(220, 38, 38, 0.1);
+  --color-info: #2563eb;
+  --color-info-bg: rgba(37, 99, 235, 0.1);
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.1);
+
+  /* ============================================
+     BACKWARD COMPATIBILITY - LIGHT
+     ============================================ */
+  --navy: #0a1e3c;
+  --navy-light: #1a365d;
+  --gray-bg: #f1f5f9;
+  --gray-border: #e2e8f0;
+  --gray-text: #475569;
+  --white: #ffffff;
+  --title-color: #0a1e3c;
+  --text-color: #475569;
+}
+
+/* 3. Tokens de Marca (Dinámicos) */
+:root {
+  --brand-primary: #4f7cff;
+  --brand-primary-hover: #3b66e0;
+  --brand-primary-light: rgba(79, 124, 255, 0.1);
+  --brand-primary-gradient: linear-gradient(135deg, #4f7cff, #6c5ce7);
+}
+
+/* 4. Aplicar iconos globalmente */
+svg {
+  color: var(--color-icon);
+}
+
+svg:hover {
+  color: var(--color-icon-hover);
+}
+
+/* 5. Estilos base */
 body {
   font-family: var(--font-ui);
-  background: var(--gray-bg);
-  color: #1a2540;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-#root { min-height: 100vh; display: flex; flex-direction: column; }
+#root { 
+  min-height: 100vh; 
+  display: flex; 
+  flex-direction: column; 
+}
 
+/* 6. Animaciones para react-hot-toast */
+.animate-enter {
+  animation: toastSlideIn 0.3s ease-out forwards;
+}
 
+.animate-leave {
+  animation: toastSlideOut 0.2s ease-in forwards;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100px) scale(0.96);
+  }
+}

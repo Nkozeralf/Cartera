@@ -79,6 +79,16 @@ const PARSERS_REGISTRADOS = [
 // ─────────────────────────────────────────────
 // Valida el contrato de cada parser al cargar el módulo (falla rápido y claro
 // en desarrollo si alguien crea un parser incompleto).
-PARSERS_REGISTRADOS.forEach(validarContratoParser);
+console.log(`🔍 [registry] Validando ${PARSERS_REGISTRADOS.length} parsers registrados...`);
+PARSERS_REGISTRADOS.forEach((parser, index) => {
+  try {
+    validarContratoParser(parser);
+    console.log(`  ${index + 1}. ✅ ${parser.id} (${parser.banco})`);
+  } catch (error) {
+    console.error(`  ${index + 1}. ❌ Error en parser ${parser.id}:`, error.message);
+    throw error;
+  }
+});
+console.log(`✅ [registry] Todos los parsers son válidos. Total: ${PARSERS_REGISTRADOS.length}`);
 
 export default PARSERS_REGISTRADOS;

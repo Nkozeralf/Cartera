@@ -28,10 +28,20 @@
  * @param {ParserBancario} parser
  */
 export function validarContratoParser(parser) {
+  console.log(`🔍 [parserContract] Validando parser:`, {
+    id: parser.id,
+    banco: parser.banco,
+    formato: parser.formato,
+    tieneDetectar: typeof parser.detectar === 'function',
+    tieneParsear: typeof parser.parsear === 'function',
+  });
+  
   const camposRequeridos = ['id', 'banco', 'formato', 'detectar', 'parsear'];
   const faltantes = camposRequeridos.filter(campo => !(campo in parser));
 
   if (faltantes.length > 0) {
+    console.error(`❌ [parserContract] Parser inválido, faltan campos:`, faltantes);
+    console.error(`📄 [parserContract] Objeto parser recibido:`, parser);
     throw new Error(
       `Parser inválido: faltan campos [${faltantes.join(', ')}]. ` +
       `Revisa el objeto exportado en el archivo del parser.`
@@ -39,10 +49,14 @@ export function validarContratoParser(parser) {
   }
 
   if (typeof parser.detectar !== 'function') {
+    console.error(`❌ [parserContract] Parser "${parser.id}": "detectar" no es una función`);
     throw new Error(`Parser "${parser.id}": "detectar" debe ser una función.`);
   }
 
   if (typeof parser.parsear !== 'function') {
+    console.error(`❌ [parserContract] Parser "${parser.id}": "parsear" no es una función`);
     throw new Error(`Parser "${parser.id}": "parsear" debe ser una función.`);
   }
+  
+  console.log(`✅ [parserContract] Parser válido: ${parser.id} (${parser.banco})`);
 }

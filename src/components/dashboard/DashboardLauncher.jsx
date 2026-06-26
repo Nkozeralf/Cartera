@@ -1,5 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+// src/components/dashboard/DashboardLauncher.jsx
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { 
   FileSpreadsheet,
   Users,
@@ -7,25 +9,19 @@ import {
   DollarSign,
   Clock,
   CheckCircle,
-  AlertCircle,
   ArrowRight,
   Upload,
-  Building2,
-  Calendar,
   FileText,
   ChevronRight,
   Zap,
   BarChart3,
-  PieChart,
-  Download,
-  Eye,
-  Layers,        // ✅ AGREGADO
+  Download, 
+  Layers,
   Scale, 
-  Trash2,        // ✅ Agregado
-  RotateCcw,     // ✅ Agregado
+  Trash2,
+  RotateCcw,
 } from 'lucide-react';
 import styles from './DashboardLauncher.module.css';
-import { obtenerDatos } from '../../infra/storage/localStorage.service';
 
 // Componente de KPI Card
 function KPICard({ icon: Icon, value, label, color, trend }) {
@@ -37,9 +33,7 @@ function KPICard({ icon: Icon, value, label, color, trend }) {
       <div className={styles.kpiContent}>
         <span className={styles.kpiValue}>{value}</span>
         <span className={styles.kpiLabel}>{label}</span>
-        {trend && (
-          <span className={styles.kpiTrend}>{trend}</span>
-        )}
+        {trend && <span className={styles.kpiTrend}>{trend}</span>}
       </div>
     </div>
   );
@@ -112,37 +106,9 @@ function SecondaryModule({
   );
 }
 
-// Componente de Actividad Reciente
-function RecentActivity({ items }) {
-  if (!items || items.length === 0) {
-    return (
-      <div className={styles.activityEmpty}>
-        <Clock size={20} />
-        <span>No hay actividad reciente</span>
-        <span className={styles.activityHint}>Carga tu primer extracto para comenzar</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.activityList}>
-      {items.map((item, i) => (
-        <div key={i} className={styles.activityItem}>
-          <div className={styles.activityIcon}>
-            {item.icon}
-          </div>
-          <div className={styles.activityContent}>
-            <span className={styles.activityText}>{item.text}</span>
-            <span className={styles.activityTime}>{item.time}</span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function DashboardLauncher() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [sessionData, setSessionData] = useState({
     firstVisit: true,
     hasData: false,
@@ -154,14 +120,73 @@ export default function DashboardLauncher() {
     actividadReciente: [],
   });
 
-  // Cargar datos desde localStorage al montar
+  // 1. Efecto unificado para controlar el Toast de bienvenida una sola vez
   useEffect(() => {
-    const stored = localStorage.getItem('popCarteraData');
+    // Almacenamos localmente las propiedades del estado actual de la navegación
+    const state = location.state;
+    if (!state?.userEmail) return; // Si no hay estado de login, no hace nada.
+
+    const isNewUser = state.isNewUser;
+    const userEmail = state.userEmail;
+    // Extraer y capitalizar la primera letra del nombre para estética premium
+    const rawName = userEmail.split('@')[0];
+    const userName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+
+    // Calcular saludo según hora
+    const currentHour = new Date().getHours();
+    let greeting = '¡Hola!';
+    if (currentHour >= 6 && currentHour < 12) greeting = '¡Buenos días!';
+    else if (currentHour >= 12 && currentHour < 19) greeting = '¡Buenas tardes!';
+    else greeting = '¡Buenas noches!';
+
+    const message = isNewUser 
+      ? 'Te damos la bienvenida a QuadraFinances.' 
+      : 'Qué bueno verte de nuevo en tu panel de control.';
+
+    // Mostrar Toast con diseño pulido
+    toast.custom((t) => (
+      <div
+        className={`${t.visible ? 'animate-enter' : 'animate-leave'}`}
+        style={{
+          background: 'rgba(15, 23, 42, 0.9)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          padding: '16px 24px',
+          borderRadius: '16px',
+          color: '#ffffff',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px',
+          fontFamily: 'system-ui, sans-serif',
+          minWidth: '300px',
+        }}
+      >
+        <span style={{ fontWeight: '700', fontSize: '1rem', color: '#a78bfa' }}>
+          {greeting} {userName}
+        </span>
+        <span style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+          {message}
+        </span>
+      </div>
+    ), { 
+      id: 'welcome-toast', 
+      duration: 5000,
+      position: 'top-right',
+    });
+
+    // Limpiar el estado de la navegación de forma segura diferida
+    window.history.replaceState({}, document.title);
+  }, []); // Se ejecuta estrictamente una sola vez al montar el componente
+
+  // 2. Cargar datos desde localStorage al montar
+  useEffect(() => {
+    const stored = localStorage.getItem('quadraData');
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        setSessionData({
-          ...sessionData,
+        setSessionData(prev => ({
+          ...prev,
           firstVisit: false,
           hasData: true,
           pdfsCargados: parsed.pdfsCargados || 0,
@@ -170,17 +195,17 @@ export default function DashboardLauncher() {
           movimientosProcesados: parsed.movimientosProcesados || 0,
           ultimaActualizacion: parsed.ultimaActualizacion || null,
           actividadReciente: parsed.actividadReciente || [],
-        });
+        }));
       } catch (e) {
         console.error('Error al cargar datos:', e);
       }
     }
   }, []);
 
-  // Escuchar cambios en localStorage desde otros módulos
+  // 3. Escuchar cambios en localStorage desde otros módulos
   useEffect(() => {
     const handleStorageChange = (e) => {
-      if (e.key === 'popCarteraData' && e.newValue) {
+      if (e.key === 'quadraData' && e.newValue) {
         try {
           const parsed = JSON.parse(e.newValue);
           setSessionData(prev => ({
@@ -203,7 +228,7 @@ export default function DashboardLauncher() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  // Formatear valores
+  // Formatear valores numéricos a moneda colombiana estándar
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
@@ -224,7 +249,6 @@ export default function DashboardLauncher() {
     });
   };
 
-  // Verificar si hay datos guardados
   const tieneDatos = sessionData.hasData && sessionData.pdfsCargados > 0;
 
   return (
@@ -233,11 +257,11 @@ export default function DashboardLauncher() {
       <div className={styles.hero}>
         <div className={styles.heroLeft}>
           <h1 className={styles.heroTitle}>
-            {sessionData.firstVisit ? 'Bienvenido a POP Cartera' : 'Panel de Control'}
+            {sessionData.firstVisit ? 'Bienvenido a Quadra Finances' : 'Panel de Control'}
           </h1>
           <p className={styles.heroSubtitle}>
             {sessionData.firstVisit 
-              ? 'Herramientas financieras para análisis y conciliación de cartera' 
+              ? 'Herramientas financieras para análisis y conciliación de cartera.' 
               : `Última actualización: ${formatDate(sessionData.ultimaActualizacion)}`
             }
           </p>
@@ -246,13 +270,13 @@ export default function DashboardLauncher() {
           <div className={styles.sessionStatus}>
             <span className={`${styles.statusDot} ${tieneDatos ? styles.active : styles.inactive}`} />
             <span className={styles.statusText}>
-              {tieneDatos ? `${sessionData.pdfsCargados} PDFs cargados` : 'Sin datos cargados'}
+              {tieneDatos ? `${sessionData.pdfsCargados} PDFs cargados` : 'Sin datos guardados'}
             </span>
           </div>
         </div>
       </div>
 
-      {/* KPIs - Solo si hay datos */}
+      {/* KPIs */}
       {tieneDatos && (
         <div className={styles.kpiGrid}>
           <KPICard
@@ -282,7 +306,7 @@ export default function DashboardLauncher() {
         </div>
       )}
 
-      {/* Guía de inicio - Si es primera vez o no hay datos */}
+      {/* Guía de inicio */}
       {sessionData.firstVisit && (
         <div className={styles.guideCard}>
           <div className={styles.guideIcon}>
@@ -315,7 +339,7 @@ export default function DashboardLauncher() {
         </div>
       )}
 
-      {/* Módulo Destacado - Reporte Clientes */}
+      {/* Módulo Principal */}
       <div className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>
@@ -328,7 +352,7 @@ export default function DashboardLauncher() {
           title="Reporte de Clientes"
           description={tieneDatos 
             ? `${sessionData.clientesEncontrados} clientes analizados · ${formatCurrency(sessionData.totalRecaudado)} recaudados`
-            : 'Sube tus extractos para analizar ingresos por cliente'
+            : 'Sube tus extractos para analizar ingresos por cliente.'
           }
           badge={tieneDatos ? `${sessionData.clientesEncontrados} clientes` : 'Nuevo'}
           color="primary"
@@ -336,57 +360,56 @@ export default function DashboardLauncher() {
         />
       </div>
 
-      {/* Herramientas Secundarias */}
-<div className={styles.section}>
-  <div className={styles.sectionHeader}>
-    <div className={styles.sectionHeaderLeft}>
-      <Layers size={18} strokeWidth={1.5} />
-      <h2 className={styles.sectionTitle}>Herramientas</h2>
-    </div>
-  </div>
-  <div className={styles.secondaryGrid}>
-    {/* ✅ DISPONIBLES PRIMERO */}
-    <SecondaryModule
-      icon={BarChart3}
-      title="Indicadores Financieros"
-      description="KPIs consolidados, concentración y salud de cartera"
-      onClick={() => navigate('/indicadores')}
-      disabled={false}
-      statusIcon={CheckCircle}
-      statusText="Disponible"
-    />
-    
-    <SecondaryModule
-      icon={FileSpreadsheet}
-      title="Conciliación de Facturas"
-      description="Cruza facturas SIIGO contra extractos bancarios"
-      onClick={() => navigate('/conciliacion')}
-      disabled={true}
-      statusIcon={Clock}
-      statusText="En desarrollo"
-    />
-    
-    <SecondaryModule
-      icon={TrendingUp}
-      title="Análisis de Recaudo"
-      description="Evolución de ingresos en el tiempo"
-      disabled={true}
-      statusIcon={Clock}
-      statusText="Próximamente"
-    />
-    
-    <SecondaryModule
-      icon={Scale}
-      title="Flujo de Caja"
-      description="Visualiza ingresos vs egresos y flujo neto"
-      disabled={true}
-      statusIcon={Clock}
-      statusText="Próximamente"
-    />
-  </div>
-</div>
+      {/* Módulos Secundarios */}
+      <div className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <div className={styles.sectionHeaderLeft}>
+            <Layers size={18} strokeWidth={1.5} />
+            <h2 className={styles.sectionTitle}>Herramientas adicionales</h2>
+          </div>
+        </div>
+        <div className={styles.secondaryGrid}>
+          <SecondaryModule
+            icon={BarChart3}
+            title="Indicadores Financieros"
+            description="KPIs consolidados, concentración y salud de cartera."
+            onClick={() => navigate('/indicadores')}
+            disabled={false}
+            statusIcon={CheckCircle}
+            statusText="Disponible"
+          />
+          
+          <SecondaryModule
+            icon={FileSpreadsheet}
+            title="Conciliación de Facturas"
+            description="Cruza facturas de SIIGO contra extractos bancarios."
+            onClick={() => navigate('/conciliacion')}
+            disabled={true}
+            statusIcon={Clock}
+            statusText="En desarrollo"
+          />
+          
+          <SecondaryModule
+            icon={TrendingUp}
+            title="Análisis de Recaudo"
+            description="Evolución de ingresos detallada en el tiempo."
+            disabled={true}
+            statusIcon={Clock}
+            statusText="Próximamente"
+          />
+          
+          <SecondaryModule
+            icon={Scale}
+            title="Flujo de Caja"
+            description="Visualiza ingresos vs egresos y calcula el flujo neto."
+            disabled={true}
+            statusIcon={Clock}
+            statusText="Próximamente"
+          />
+        </div>
+      </div>
 
-      {/* Actividad Reciente - Línea de tiempo */}
+      {/* Actividad Reciente */}
       {tieneDatos && sessionData.actividadReciente?.length > 0 && (
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
@@ -401,17 +424,16 @@ export default function DashboardLauncher() {
           
           <div className={styles.timeline}>
             {sessionData.actividadReciente.map((item, index) => {
-              // Determinar icono basado en el texto
               let Icon = FileSpreadsheet;
               let iconClass = styles.timelineIconDefault;
               
               if (item.text.includes('Procesados')) {
                 Icon = BarChart3;
                 iconClass = styles.timelineIconSuccess;
-              } else if (item.text.includes('limpiados') || item.text.includes('Limpiados')) {
+              } else if (item.text.toLowerCase().includes('limpiados')) {
                 Icon = Trash2;
                 iconClass = styles.timelineIconWarning;
-              } else if (item.text.includes('exportado')) {
+              } else if (item.text.toLowerCase().includes('exportado')) {
                 Icon = Download;
                 iconClass = styles.timelineIconInfo;
               } else if (item.text.includes('Restauración')) {
@@ -440,26 +462,20 @@ export default function DashboardLauncher() {
         </div>
       )}
 
-      {/* Acción Rápida - Si no hay datos */}
+      {/* Empty State */}
       {!tieneDatos && !sessionData.firstVisit && (
         <div className={styles.emptyState}>
           <Upload size={48} className={styles.emptyIcon} />
           <h3 className={styles.emptyTitle}>Aún no hay datos</h3>
           <p className={styles.emptyText}>
-            Carga tu primer extracto bancario en el módulo de <strong>Clientes</strong> o <strong>Conciliación</strong>
+            Carga tu primer extracto bancario en el módulo de <strong>Clientes</strong> o <strong>Conciliación</strong>.
           </p>
           <div className={styles.emptyActions}>
-            <button 
-              className={styles.emptyButton}
-              onClick={() => navigate('/clientes')}
-            >
+            <button className={styles.emptyButton} onClick={() => navigate('/clientes')}>
               <Users size={16} />
               Ir a Clientes
             </button>
-            <button 
-              className={`${styles.emptyButton} ${styles.outline}`}
-              onClick={() => navigate('/conciliacion')}
-            >
+            <button className={`${styles.emptyButton} ${styles.outline}`} onClick={() => navigate('/conciliacion')}>
               <FileSpreadsheet size={16} />
               Ir a Conciliación
             </button>
@@ -469,4 +485,3 @@ export default function DashboardLauncher() {
     </div>
   );
 }
-

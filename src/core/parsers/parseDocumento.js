@@ -11,6 +11,7 @@
 // ═══════════════════════════════════════════
 
 import PARSERS_REGISTRADOS from './registry.js';
+import { validarContratAdapterMovimientos } from './adapterContract.js';
 
 // Por debajo de este puntaje, ningún parser se considera una detección válida.
 const UMBRAL_CONFIANZA_MINIMO = 30;
@@ -32,16 +33,37 @@ const UMBRAL_CONFIANZA_MINIMO = 30;
  *   deteccion: ResultadoDeteccion
  * }>}
  * @throws {Error} si ningún parser registrado reconoce el formato del documento
+ * @throws {Error} si los movimientos retornados no cumplen el contrato de adapter
+ *   (falta "tipo" Y "direccion", o faltan campos requeridos)
  */
 export async function parseDocumento(file) {
+  console.log(`🔍 [parseDocumento] Iniciando parseo de archivo: ${file.name}`);
+  
   const textoMuestra = await extraerTextoPrimeraPagina(file);
+  console.log(`📄 [parseDocumento] Texto extraído (primeros 200 chars):`, textoMuestra?.slice(0, 200));
+  
   const deteccion = detectarParser(textoMuestra);
+  console.log(`🎯 [parseDocumento] Detección:`, deteccion ? {
+    parserId: deteccion.parser.id,
+    banco: deteccion.parser.banco,
+    confianza: deteccion.confianza
+  } : 'NINGUNA');
 
   if (!deteccion) {
+    console.error(`❌ [parseDocumento] Ningún parser reconoció el formato`);
     throw new ErrorFormatoNoReconocido(textoMuestra); 
   }
 
+  console.log(`⚙️ [parseDocumento] Ejecutando parser: ${deteccion.parser.id}`);
   const { movimientos, metadata } = await deteccion.parser.parsear(file);
+  console.log(`📊 [parseDocumento] Parser retornó ${movimientos?.length || 0} movimientos`);
+  console.log(`📋 [parseDocumento] Metadata:`, metadata);
+
+  // FASE 1: Validar contrato de adapter
+  // Asegura que TODOS los movimientos cumplen el contrato mínimo:
+  // - Debe haber un identificador de dirección: "tipo" O "direccion"
+  // - Todos los campos requeridos deben estar presentes
+  validarContratAdapterMovimientos(movimientos, deteccion.parser.id);
 
   return {
     movimientos,
@@ -62,6 +84,9 @@ export async function parseDocumento(file) {
  */
 export class ErrorFormatoNoReconocido extends Error {
   constructor(textoMuestra) {
+    console.error(`❌ [parseDocumento] ErrorFormatoNoReconocido`);
+    console.error(`📄 [parseDocumento] Texto muestra (primeros 500 chars):`, textoMuestra?.slice(0, 500));
+    
     super('No se reconoció el formato del extracto bancario. Ningún parser registrado superó el umbral de confianza mínimo.');
     this.name = 'ErrorFormatoNoReconocido';
     this.textoMuestra = textoMuestra?.slice(0, 500) ?? null;

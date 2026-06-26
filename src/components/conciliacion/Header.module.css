@@ -1,573 +1,251 @@
-/* Header.module.css - Versión Ultra Moderna */
+/* Header principal de conciliación */
 .header {
-  background: var(--navy);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border-bottom: 1px solid rgba(255,255,255,0.03);
-  backdrop-filter: blur(0px);
-}
-
-.header.sticky {
-  backdrop-filter: blur(20px);
-  background: rgba(26, 35, 53, 0.95);
-  box-shadow: 0 4px 30px rgba(0,0,0,0.3);
-}
-
-.header.hover {
-  backdrop-filter: blur(10px);
-}
-
-/* Progress Bar Superior */
-.progressBarContainer {
-  height: 3px;
-  background: rgba(255,255,255,0.05);
-  overflow: hidden;
-  position: relative;
-}
-
-.progressBar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--green), #60d08a, var(--green));
-  background-size: 200% 100%;
-  animation: progressGradient 2s ease-in-out infinite;
-  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
-@keyframes progressGradient {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-/* Header Content */
-.headerContent {
-  padding: 0 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 72px;
-  gap: 20px;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--white);
+  border: 1px solid var(--gray-border);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
-/* Logo Container */
-.logoContainer {
+.headerLeft {
   display: flex;
   align-items: center;
   gap: 12px;
-  position: relative;
 }
 
-.logo {
-  height: 44px;
-  width: auto;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  filter: brightness(1) drop-shadow(0 0 0 transparent);
-}
-
-.logo:hover {
-  transform: scale(1.05) rotate(-1deg);
-  filter: brightness(1.1) drop-shadow(0 0 20px rgba(255,255,255,0.1));
-}
-
-.badge {
-  background: var(--green);
-  color: white;
-  font-size: 9px;
-  font-weight: 700;
-  padding: 2px 6px;
+.headerIcon {
+  width: 40px;
+  height: 40px;
   border-radius: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  position: absolute;
-  top: -8px;
-  right: -20px;
-  animation: badgePulse 2s ease-in-out infinite;
-}
-
-@keyframes badgePulse {
-  0%, 100% { opacity: 0.8; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-}
-
-/* Stepper */
-.stepper {
+  background: var(--gray-bg);
   display: flex;
   align-items: center;
-  gap: 0;
-  flex: 1;
   justify-content: center;
-  max-width: 700px;
-  position: relative;
+  color: var(--navy);
 }
 
-/* Paso individual */
-.paso {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: rgba(255,255,255,0.3);
-  font-family: var(--font-ui);
+.headerTitle {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0;
+}
+
+.headerSubtitle {
   font-size: 13px;
-  font-weight: 500;
-  position: relative;
-  padding: 8px 4px;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 8px;
-  min-width: 80px;
-  justify-content: center;
-  user-select: none;
+  color: var(--gray-text);
+  margin: 2px 0 0 0;
 }
 
-.paso.animated {
-  animation: stepFadeIn 0.6s ease forwards;
-  opacity: 0;
-}
-
-.paso:nth-child(1) { animation-delay: 0.1s; }
-.paso:nth-child(3) { animation-delay: 0.2s; }
-.paso:nth-child(5) { animation-delay: 0.3s; }
-
-@keyframes stepFadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.paso:hover {
-  background: rgba(255,255,255,0.03);
-  transform: translateY(-1px);
-}
-
-.paso.pendiente:hover {
-  color: rgba(255,255,255,0.5);
-}
-
-.paso.activo {
-  color: var(--white);
-  transform: scale(1.02);
-}
-
-.paso.completado {
-  color: rgba(255,255,255,0.7);
-}
-
-/* Círculo con efecto neón */
-.circulo {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+.headerRight {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
+}
+
+/* Live indicator */
+.liveIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
-  flex-shrink: 0;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  z-index: 2;
-}
-
-/* Ripple effect */
-.ripple {
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  transition: all 0.4s ease;
-  pointer-events: none;
-}
-
-.paso:hover .ripple {
-  border-color: rgba(255,255,255,0.1);
-  animation: rippleExpand 1s ease-out infinite;
-}
-
-@keyframes rippleExpand {
-  0% { transform: scale(1); opacity: 0.5; }
-  100% { transform: scale(1.5); opacity: 0; }
-}
-
-/* Estados del círculo */
-.paso.pendiente .circulo {
-  border: 2px solid rgba(255,255,255,0.15);
-  background: transparent;
-  color: rgba(255,255,255,0.3);
-}
-
-.paso.activo .circulo {
-  background: var(--white);
-  color: var(--navy);
-  border: 2px solid var(--white);
-  box-shadow: 0 0 30px rgba(255,255,255,0.15);
-  transform: scale(1.05);
-}
-
-.paso.activo .circulo::after {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.15);
-  animation: pulseNeon 2s ease-in-out infinite;
-}
-
-@keyframes pulseNeon {
-  0%, 100% { transform: scale(1); opacity: 0.3; }
-  50% { transform: scale(1.2); opacity: 0; }
-}
-
-.paso.completado .circulo {
-  background: var(--green);
-  border: 2px solid var(--green);
-  color: white;
-  box-shadow: 0 0 30px rgba(46, 213, 115, 0.15);
-}
-
-/* Checkmark */
-.checkmark {
-  width: 16px;
-  height: 16px;
-  fill: white;
-  animation: checkmarkIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes checkmarkIn {
-  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
-  100% { transform: scale(1) rotate(0); opacity: 1; }
-}
-
-/* Label con live dot */
-.label {
-  white-space: nowrap;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  color: #10b981;
 }
 
 .liveDot {
-  color: #48bb78;
-  font-size: 8px;
-  animation: blink 1.5s ease-in-out infinite;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: pulse 2s ease-in-out infinite;
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
 }
 
-/* Tooltip Moderno */
-.tooltip {
-  position: absolute;
-  bottom: calc(100% + 12px);
-  left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  background: rgba(26, 35, 53, 0.98);
-  backdrop-filter: blur(20px);
-  color: white;
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-size: 12px;
-  white-space: nowrap;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-  border: 1px solid rgba(255,255,255,0.05);
-  z-index: 1000;
-  min-width: 160px;
-  animation: tooltipSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.tooltipVisible {
-  opacity: 0;
-}
-
-@keyframes tooltipSlide {
-  from { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.95); }
-  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-}
-
-.tooltipContent {
+/* Progress bar */
+.progressContainer {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--gray-bg);
+  border-radius: 10px;
+  margin-bottom: 20px;
 }
 
-.tooltipIcon {
-  font-size: 18px;
+.progressLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-text);
+  white-space: nowrap;
 }
 
-.tooltipText {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.progressBar {
+  flex: 1;
+  height: 6px;
+  background: var(--gray-border);
+  border-radius: 3px;
+  overflow: hidden;
 }
 
-.tooltipText strong {
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), #60d08a, var(--green));
+  background-size: 200% 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.progressPercent {
   font-size: 13px;
   font-weight: 600;
+  color: var(--navy);
+  min-width: 40px;
+  text-align: right;
 }
 
-.tooltipText p {
-  margin: 0;
-  font-size: 11px;
-  opacity: 0.7;
-  font-weight: 400;
+/* Stats */
+.statsRow {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.tooltipArrow {
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-  width: 12px;
-  height: 12px;
-  background: rgba(26, 35, 53, 0.98);
-  border-right: 1px solid rgba(255,255,255,0.05);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-/* Líneas con partículas */
-.lineaWrapper {
-  position: relative;
+.statCard {
   flex: 1;
-  min-width: 30px;
-  max-width: 60px;
-  height: 2px;
-  margin: 0 4px;
+  min-width: 140px;
+  padding: 16px 20px;
+  background: var(--white);
+  border: 1px solid var(--gray-border);
+  border-radius: 12px;
+  transition: all 0.2s ease;
 }
 
-.linea {
-  width: 100%;
-  height: 2px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 2px;
-  transition: all 0.6s ease;
-  position: relative;
-  overflow: hidden;
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
-.lineaCompletada {
-  background: linear-gradient(90deg, var(--green), rgba(46, 213, 115, 0.3));
-}
-
-/* Partículas en línea */
-.particles {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.particle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: var(--green);
-  border-radius: 50%;
-  opacity: 0;
-  animation: particleFloat 3s ease-in-out infinite;
-}
-
-.particle:nth-child(1) { left: 20%; animation-delay: 0s; }
-.particle:nth-child(2) { left: 50%; animation-delay: 1s; }
-.particle:nth-child(3) { left: 80%; animation-delay: 2s; }
-
-@keyframes particleFloat {
-  0%, 100% { transform: translateY(0) scale(0); opacity: 0; }
-  50% { transform: translateY(-20px) scale(1); opacity: 0.5; }
-}
-
-/* Indicadores del header */
-.headerIndicators {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.stepCounter {
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.4);
-  font-variant-numeric: tabular-nums;
-}
-
-.currentStep {
+.statCard.statTotal {
+  background: linear-gradient(135deg, var(--navy), var(--navy));
+  border-color: var(--navy);
   color: white;
-  font-weight: 600;
-  font-size: 16px;
 }
 
-.totalSteps {
-  opacity: 0.5;
-  margin-left: 2px;
+.statCard.statTotal .statValue {
+  color: white;
 }
 
-.themeToggle {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.6);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+.statCard.statTotal .statLabel {
+  color: rgba(255,255,255,0.7);
+}
+
+.statLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-text);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+.statValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+/* Actions */
+.actionsRow {
   display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btnExportar {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #4299e1, var(--green));
+  background-size: 200% 100%;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-ui);
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 16px;
 }
 
-.themeToggle:hover {
-  background: rgba(255,255,255,0.1);
-  transform: rotate(30deg) scale(1.05);
+.btnExportar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(66, 153, 225, 0.3);
 }
 
-/* Scroll Progress Bar */
-.scrollProgress {
-  height: 2px;
-  background: rgba(255,255,255,0.03);
-  overflow: hidden;
-  position: relative;
+.btnExportar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
-.scrollProgressBar {
-  height: 100%;
-  background: linear-gradient(90deg, #4299e1, var(--green));
-  transition: width 0.1s ease;
-  box-shadow: 0 0 20px rgba(66, 153, 225, 0.3);
-}
-
-/* Mobile - Ultra Moderno */
+/* Responsive */
 @media (max-width: 768px) {
-  .headerContent {
-    padding: 0 16px;
-    height: 60px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .logo {
-    height: 32px;
-  }
-
-  .badge {
-    font-size: 7px;
-    padding: 1px 4px;
-    top: -6px;
-    right: -16px;
-  }
-
-  .stepper {
-    width: 100%;
-    justify-content: space-between;
-    padding: 4px 0;
-    order: 3;
-    border-top: 1px solid rgba(255,255,255,0.03);
-    max-width: 100%;
-  }
-
-  .paso {
-    flex: 1;
+  .header {
     flex-direction: column;
-    gap: 3px;
-    padding: 6px 2px;
-    min-width: 0;
-    position: relative;
-    font-size: 11px;
+    align-items: stretch;
   }
-
-  .circulo {
-    width: 28px;
-    height: 28px;
-    font-size: 11px;
+  
+  .headerRight {
+    justify-content: flex-start;
   }
-
-  .label {
-    font-size: 9px;
-    font-weight: 400;
-    opacity: 0.6;
-    text-align: center;
+  
+  .statsRow {
+    flex-direction: column;
+  }
+  
+  .statCard {
+    min-width: 100%;
+  }
+  
+  .actionsRow {
+    flex-direction: column;
+  }
+  
+  .btnExportar {
     width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 0 2px;
-  }
-
-  .paso.activo .label {
-    opacity: 1;
-    font-weight: 600;
-    font-size: 10px;
-  }
-
-  .paso.completado .label {
-    opacity: 0.8;
-  }
-
-  .lineaWrapper {
-    min-width: 15px;
-    max-width: 30px;
-    margin: 0 2px;
-  }
-
-  .stepCounter {
-    font-size: 12px;
-  }
-
-  .currentStep {
-    font-size: 14px;
-  }
-
-  .themeToggle {
-    width: 28px;
-    height: 28px;
-    font-size: 14px;
-  }
-
-  .tooltip {
-    display: none;
-  }
-
-  .headerIndicators {
-    gap: 8px;
+    justify-content: center;
   }
 }
 
 @media (max-width: 480px) {
-  .headerContent {
-    padding: 0 12px;
-    height: 54px;
+  .headerTitle {
+    font-size: 18px;
   }
-
-  .logo {
-    height: 28px;
-  }
-
-  .circulo {
-    width: 24px;
-    height: 24px;
-    font-size: 10px;
-  }
-
-  .label {
-    font-size: 8px;
-  }
-
-  .paso.activo .label {
-    font-size: 9px;
-  }
-
-  .paso {
-    padding: 4px 1px;
-  }
-
-  .lineaWrapper {
-    min-width: 10px;
-    max-width: 20px;
+  
+  .statValue {
+    font-size: 20px;
   }
 }

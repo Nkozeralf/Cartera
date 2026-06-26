@@ -1,20 +1,16 @@
+// src/components/shared/AppFooter.jsx
 import { useState, useEffect, useMemo } from 'react';
 import { ArrowUp, AlertTriangle, CheckCircle, Wifi, Globe } from 'lucide-react';
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
 import styles from './AppFooter.module.css';
 import packageJson from '../../../package.json';
 import { obtenerDatos } from '../../infra/storage/localStorage.service';
+import { useBranding } from '../../context/BrandingContext';
+import { QuadraLogo } from './QuadraLogo';
 
 const VERSION = packageJson.version || '1.0.0';
 
 export default function AppFooter() {
+  const { nombre: brandName, logo: brandLogo, brandPrimary, modoOscuro } = useBranding();
   const [systemStatus, setSystemStatus] = useState({
     status: 'stable',
     message: 'Sistema estable',
@@ -71,7 +67,7 @@ export default function AppFooter() {
       console.error = originalError;
       console.warn = originalWarn;
     };
-  }, []); // ✅ Dependencia vacía - solo se ejecuta una vez
+  }, []);
 
   // ✅ Estado del sistema - CORREGIDO (dependencias correctas)
   useEffect(() => {
@@ -97,7 +93,7 @@ export default function AppFooter() {
         color: '#10b981',
       });
     }
-  }, [errors]); // ✅ Dependencia correcta
+  }, [errors]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -110,14 +106,14 @@ export default function AppFooter() {
     <footer className={styles.footer}>
       <div className={styles.footerContent}>
         <div className={styles.footerMain}>
-          {/* Logo y nombre */}
+          {/* Logo y nombre - Branding dinámico */}
           <div className={styles.footerBrand}>
-            <img 
-              src="https://www.popagenciacreativa.com/page/page/include/img/simbolo.png" 
-              alt="POP Agencia"
-              className={styles.brandLogo}
-            />
-            <span className={styles.brandName}>POP Cartera</span>
+            <div className={styles.footerLogoWrapper}>
+              <QuadraLogo isDarkMode={modoOscuro} size={20} />
+            </div>
+            <span className={styles.brandName} style={{ color: brandPrimary }}>
+              {brandName || 'Quadra Finances'}
+            </span>
             <span className={styles.brandVersion}>v{VERSION}</span>
           </div>
 
@@ -164,49 +160,6 @@ export default function AppFooter() {
             </div>
           </div>
 
-          {/* Mini Gráfica */}
-          <div className={styles.footerChart}>
-            {chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="footerGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.35} />
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="fecha" hide />
-                  <YAxis hide />
-                  <Tooltip 
-                    formatter={(v) => [`$${v.toLocaleString()}`, 'Recaudo']}
-                    labelFormatter={(label) => `Fecha: ${label}`}
-                    contentStyle={{ 
-                      background: 'rgba(11,16,38,0.95)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: '6px',
-                      fontSize: '10px',
-                      color: 'white',
-                      padding: '4px 8px',
-                    }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="valor" 
-                    stroke="#3b82f6" 
-                    strokeWidth={1.5}
-                    fill="url(#footerGradient)"
-                    isAnimationActive={true}
-                    animationDuration={800}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className={styles.footerChartEmpty}>
-                <span>Sin datos</span>
-              </div>
-            )}
-          </div>
-
           {/* Volver arriba */}
           <button 
             className={styles.scrollButton}
@@ -221,4 +174,3 @@ export default function AppFooter() {
     </footer>
   );
 }
-

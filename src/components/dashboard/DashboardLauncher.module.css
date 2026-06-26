@@ -289,27 +289,38 @@
 }
 
 .featuredCard.primary {
-  border-color: var(--navy);
-  background: linear-gradient(135deg, var(--navy), #1a365d);
-  color: white;
+  border-color: var(--brand-primary);
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+  border-width: 2px;
+}
+
+.featuredCard.primary .featuredTitle {
+  color: var(--color-text-inverse);
 }
 
 .featuredCard.primary .featuredDescription {
-  color: rgba(255,255,255,0.7);
+  color: var(--color-text-secondary);
 }
 
 .featuredCard.primary .featuredAction {
-  color: rgba(255,255,255,0.8);
+  color: var(--brand-primary);
 }
 
 .featuredCard.primary .featuredBadge {
-  background: rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.9);
+  background: var(--brand-primary-light);
+  color: var(--brand-primary);
 }
 
 .featuredCard.primary .featuredIcon {
-  background: rgba(255,255,255,0.12);
-  color: white;
+  background: var(--brand-primary-light);
+  color: var(--brand-primary);
+}
+
+.featuredCard.primary:hover {
+  border-color: var(--brand-primary);
+  box-shadow: 0 8px 32px var(--brand-primary-light);
+  transform: translateY(-4px);
 }
 
 .featuredCard:focus-visible {
@@ -347,7 +358,7 @@
 }
 
 .featuredCard.primary .featuredTitle {
-  color: white;
+  color: --color-text-inverse;
 }
 
 .featuredBadge {
@@ -563,7 +574,7 @@
 }
 
 .emptyButton:hover {
-  background: #1a365d;
+  background: var(--navy);
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0,43,100,0.15);
 }
@@ -815,8 +826,8 @@
   gap: 16px;
   padding: 24px;
   border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  background: white;
+  border: 1px solid var(--gray-border);
+  background: var(--white);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: default;
   position: relative;
@@ -827,20 +838,20 @@
 }
 
 .secondaryCard.available:hover {
-  border-color: #0a1e3c;
+  border-color: var(--navy);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   transform: translateY(-2px);
 }
 
 .secondaryCard.disabled {
   opacity: 0.6;
-  background: #f8fafc;
+  background: var(--gray-bg);
 }
 
 .secondaryIcon {
   width: 44px;
   height: 44px;
-  background: #f1f5f9;
+  background: var(--gray-bg);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -849,8 +860,8 @@
 }
 
 .available .secondaryIcon {
-  background: #f0f9ff;
-  color: #0a1e3c;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--navy);
 }
 
 .secondaryContent {
@@ -861,14 +872,14 @@
 .secondaryTitle {
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #0a1e3c;
+  color: var(--navy);
   margin: 0 0 6px;
   letter-spacing: -0.01em;
 }
 
 .secondaryDescription {
   font-size: 0.8125rem;
-  color: #64748b;
+  color: var(--gray-text);
   margin: 0;
   line-height: 1.5;
 }
@@ -894,18 +905,49 @@
 }
 
 .badgeAvailable {
-  background: #dcfce7;
-  color: #166534;
-  border: 1px solid #bbf7d0;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .badgeDisabled {
-  background: #f1f5f9;
-  color: #94a3b8;
-  border: 1px solid #e2e8f0;
+  background: var(--gray-bg);
+  color: var(--gray-text);
+  border: 1px solid var(--gray-border);
 }
 
 .secondaryChevron {
-  color: #0a1e3c;
+  color: var(--navy);
   flex-shrink: 0;
+}
+
+/* Animaciones para react-hot-toast */
+.animate-enter {
+  animation: toastSlideIn 0.3s ease-out forwards;
+}
+
+.animate-leave {
+  animation: toastSlideOut 0.2s ease-in forwards;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100px) scale(0.96);
+  }
 }

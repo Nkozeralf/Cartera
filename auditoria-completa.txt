@@ -1,0 +1,1134 @@
+﻿================ ESTRUCTURA SRC ================
+Listado de rutas de carpetas
+El n·mero de serie del volumen es 00000184 200F:3317
+C:\USERS\NICOL\ONEDRIVE\DOCUMENTOS\DESARROLLO\POP-CARTERA\SRC
+ª   App.jsx
+ª   index.css
+ª   main.jsx
+ª   
++---components
+ª   +---auth
+ª   ª       Login.jsx
+ª   ª       Login.module.css
+ª   ª       
+ª   +---charts
+ª   ª       BarChart.jsx
+ª   ª       charts.module.css
+ª   ª       DonutChart.jsx
+ª   ª       IndicadoresFinancieros.jsx
+ª   ª       IndicadoresFinancieros.module.css
+ª   ª       KPIWidget.jsx
+ª   ª       TimeSeriesChart.jsx
+ª   ª       
+ª   +---clientes
+ª   ª   ª   ClientesCards.jsx
+ª   ª   ª   ClientesCards.module.css
+ª   ª   ª   ClientesDashboard.jsx
+ª   ª   ª   ClientesDashboard.module.css
+ª   ª   ª   ClientesFilters.jsx
+ª   ª   ª   ClientesFilters.module.css
+ª   ª   ª   ClientesTable.jsx
+ª   ª   ª   ClientesTable.module.css
+ª   ª   ª   
+ª   ª   +---components
+ª   ª   ª       ClienteCard.jsx
+ª   ª   ª       ClienteDrawer.jsx
+ª   ª   ª       KPI.jsx
+ª   ª   ª       Toast.jsx
+ª   ª   ª       
+ª   ª   +---constants
+ª   ª   ª       bancoLogos.js
+ª   ª   ª       clienteIcons.js
+ª   ª   ª       
+ª   ª   +---utils
+ª   ª           clientesVisualUtils.js
+ª   ª           
+ª   +---conciliacion
+ª   ª       Header.jsx
+ª   ª       Header.module.css
+ª   ª       PasoConciliacion.jsx
+ª   ª       PasoConciliacion.module.css
+ª   ª       PasoExtracto.jsx
+ª   ª       PasoExtracto.module.css
+ª   ª       PasoFacturas.jsx
+ª   ª       PasoFacturas.module.css
+ª   ª       
+ª   +---dashboard
+ª   ª       DashboardLauncher.jsx
+ª   ª       DashboardLauncher.module.css
+ª   ª       MetricCard.jsx
+ª   ª       MetricCard.module.css
+ª   ª       
+ª   +---shared
+ª           AppFooter.jsx
+ª           AppFooter.module.css
+ª           Breadcrumbs.jsx
+ª           Breadcrumbs.module.css
+ª           ExportButton.jsx
+ª           ExportButton.module.css
+ª           FiltersPanel.jsx
+ª           FiltersPanel.module.css
+ª           GlobalHeader.jsx
+ª           GlobalHeader.module.css
+ª           SearchInput.jsx
+ª           SearchInput.module.css
+ª           
++---context
+ª       BrandingContext.jsx
+ª       
++---core
+ª   +---analytics
+ª   ª       clientesAnalytics.js
+ª   ª       clientesSelectors.js
+ª   ª       conciliar.js
+ª   ª       
+ª   +---parsers
+ª   ª   ª   adapterContract.js
+ª   ª   ª   normalizer.js
+ª   ª   ª   parseDocumento.js
+ª   ª   ª   parserContract.js
+ª   ª   ª   registry.js
+ª   ª   ª   
+ª   ª   +---bancolombia
+ª   ª   ª       parseBancolombiaMov.js
+ª   ª   ª       parserBancolombia.js
+ª   ª   ª       
+ª   ª   +---bbva
+ª   ª           parserBBVA.js
+ª   ª           
+ª   +---utils
+ª           formatUtils.js
+ª           fuzzySearch.js
+ª           
++---hooks
+ª       useClientesData.js
+ª       useMousePosition.js
+ª       usePagination.js
+ª       usePasskey.js
+ª       usePDFUpload.js
+ª       
++---infra
+ª   ª   firebase.config.js
+ª   ª   useAuth.js
+ª   ª   
+ª   +---auth
+ª   ª       auth.service.js
+ª   ª       passkey.service.js
+ª   ª       
+ª   +---licencias
+ª   ª       licencias.service.js
+ª   ª       
+ª   +---storage
+ª           localStorage.service.js
+ª           
++---utils
+        persistence.js
+        
+
+================ PACKAGE.JSON ================
+{
+    "name":  "pop-cartera",
+    "private":  true,
+    "version":  "1.2.5",
+    "type":  "module",
+    "scripts":  {
+                    "dev":  "vite",
+                    "build":  "vite build",
+                    "lint":  "eslint .",
+                    "preview":  "vite preview",
+                    "favicons":  "node scripts/generate-favicons.js",
+                    "firestore:init":  "node scripts/init-firestore.js",
+                    "firestore:test":  "node scripts/create-test-licencia.js"
+                },
+    "dependencies":  {
+                         "@tanstack/react-table":  "^8.21.3",
+                         "@tanstack/react-virtual":  "^3.14.3",
+                         "clsx":  "^2.1.1",
+                         "date-fns":  "^4.4.0",
+                         "fastest-levenshtein":  "^1.0.16",
+                         "firebase":  "^12.15.0",
+                         "fuse.js":  "^7.4.2",
+                         "lucide-react":  "^1.20.0",
+                         "pdfjs-dist":  "^6.0.227",
+                         "react":  "^19.2.6",
+                         "react-dnd":  "^16.0.1",
+                         "react-dnd-html5-backend":  "^16.0.1",
+                         "react-dom":  "^19.2.6",
+                         "react-router-dom":  "^7.18.0",
+                         "react-window":  "^2.2.7",
+                         "recharts":  "^3.8.1",
+                         "xlsx":  "^0.18.5"
+                     },
+    "devDependencies":  {
+                            "@eslint/js":  "^10.0.1",
+                            "@types/react":  "^19.2.14",
+                            "@types/react-dom":  "^19.2.3",
+                            "@vitejs/plugin-react":  "^6.0.1",
+                            "eslint":  "^10.3.0",
+                            "eslint-plugin-react-hooks":  "^7.1.1",
+                            "eslint-plugin-react-refresh":  "^0.5.2",
+                            "globals":  "^17.6.0",
+                            "sharp":  "^0.35.2",
+                            "vite":  "^8.0.12"
+                        }
+}
+
+================ MAIN.JSX ================
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { initializeFirebase } from './infra/firebase.config.js';
+import App from './App.jsx';
+
+// FASE 2: Inicializar Firebase antes de renderizar la app
+initializeFirebase();
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+
+
+
+================ APP.JSX ================
+import { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import './index.css';
+import { BrandingProvider } from './context/BrandingContext';
+import GlobalHeader from './components/shared/GlobalHeader';
+import DashboardLauncher from './components/dashboard/DashboardLauncher';
+import PasoFacturas from './components/conciliacion/PasoFacturas';
+import PasoExtracto from './components/conciliacion/PasoExtracto';
+import PasoConciliacion from './components/conciliacion/PasoConciliacion';
+import ClientesDashboard from './components/clientes/ClientesDashboard';
+import IndicadoresFinancieros from './components/charts/IndicadoresFinancieros';
+import { obtenerDatos } from './infra/storage/localStorage.service';
+import AppFooter from './components/shared/AppFooter';
+
+export default function App() {
+  const [facturas, setFacturas] = useState([]);
+  const [movimientos, setMovimientos] = useState([]);
+  const [clientes, setClientes] = useState([]);
+  const [pasoConciliacion, setPasoConciliacion] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // âœ… Cargar datos para el header
+  const datos = obtenerDatos();
+  const headerClientes = datos?.clientesEncontrados || 0;
+  const headerMovimientos = datos?.movimientosProcesados || 0;
+  const headerFacturas = facturas.length;
+
+  function handleFacturasSiguiente(data) {
+    setFacturas(data);
+    setPasoConciliacion(1);
+  }
+
+  function handleExtractoSiguiente(data) {
+    setMovimientos(data);
+    setPasoConciliacion(2);
+  }
+
+  function handleAtras(pasoDestino) {
+    setPasoConciliacion(pasoDestino);
+  }
+
+  // âœ… Callback para recibir datos desde ClientesDashboard
+  const handleClientesUpdate = (clientesData, movimientosData) => {
+    setClientes(clientesData);
+    setMovimientos(movimientosData);
+  };
+
+  return (
+    <BrandingProvider>
+      <BrowserRouter>
+        <GlobalHeader
+          pasoActual={pasoConciliacion}
+          movimientosCount={headerMovimientos}
+          clientesCount={headerClientes}
+          facturasCount={headerFacturas}
+          movimientosData={movimientos}
+          clientesData={clientes}
+          isProcessing={isLoading}
+        />
+
+        <main id="main-content">
+          <Routes>
+            <Route path="/" element={<DashboardLauncher />} />
+            <Route path="/dashboard" element={<Navigate to="/" replace />} />
+
+            <Route path="/conciliacion" element={
+              <>
+                {pasoConciliacion === 0 && (
+                  <PasoFacturas
+                    onSiguiente={handleFacturasSiguiente}
+                  />
+                )}
+                {pasoConciliacion === 1 && (
+                  <PasoExtracto
+                    onSiguiente={handleExtractoSiguiente}
+                    onAtras={() => handleAtras(0)}
+                    facturas={facturas}
+                  />
+                )}
+                {pasoConciliacion === 2 && (
+                  <PasoConciliacion
+                    facturas={facturas}
+                    movimientos={movimientos}
+                    onAtras={() => handleAtras(1)}
+                  />
+                )}
+              </>
+            } />
+
+            <Route path="/clientes" element={
+              <ClientesDashboard onClientesUpdate={handleClientesUpdate} />
+            } />
+
+            <Route path="/indicadores" element={<IndicadoresFinancieros />} />
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
+
+        <AppFooter />
+      </BrowserRouter>
+    </BrandingProvider>
+  );
+}
+
+
+================ FIREBASE CONFIG ================
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// infra/firebase.config.js
+// ConfiguraciÃ³n e inicializaciÃ³n de Firebase.
+// Se llama una sola vez en main.jsx ANTES de createRoot.
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+
+let app, auth, db;
+
+/**
+ * Inicializa Firebase con credenciales de .env.local
+ * Llamar una sola vez en main.jsx, antes de renderizar la app.
+ * @throws {Error} si faltan variables de .env.local
+ */
+export function initializeFirebase() {
+  const firebaseConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  };
+
+  // Validar que todas las variables estÃ¡n presentes
+  const camposRequeridos = Object.entries(firebaseConfig);
+  const faltantes = camposRequeridos
+    .filter(([key, value]) => !value)
+    .map(([key]) => key);
+
+  if (faltantes.length > 0) {
+    throw new Error(
+      `Firebase: faltan variables de .env.local: [${faltantes.join(', ')}]. ` +
+      `Copia .env.local.example a .env.local y llÃ©nalo con tus credenciales.`
+    );
+  }
+
+  // Inicializar Firebase 
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+
+  console.log('âœ“ Firebase initialized:', firebaseConfig.projectId);
+}
+
+/**
+ * Obtiene la instancia de Auth despuÃ©s de inicializar.
+ * @returns {Object} Firebase Auth instance
+ */
+export function getAuthInstance() {
+  if (!auth) {
+    throw new Error(
+      'Firebase not initialized. Call initializeFirebase() in main.jsx before creating the app.'
+    );
+  }
+  return auth;
+}
+
+/**
+ * Obtiene la instancia de Firestore despuÃ©s de inicializar.
+ * @returns {Object} Firebase Firestore instance
+ */
+export function getFirestoreInstance() {
+  if (!db) {
+    throw new Error(
+      'Firebase not initialized. Call initializeFirebase() in main.jsx before creating the app.'
+    );
+  }
+  return db;
+}
+
+export default {
+  initializeFirebase,
+  getAuthInstance,
+  getFirestoreInstance,
+};
+
+================ AUTH SERVICE ================
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Servicios de autenticaciÃ³n - PASSKEYS FIRST
+// Firebase SOLO como sesiÃ³n, no como registro manual
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+import {
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+  deleteUser,
+} from 'firebase/auth';
+
+import { getAuthInstance } from '../firebase.config.js';
+
+function getAuth() {
+  return getAuthInstance();
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// âŒ DESHABILITADO: NO MÃS CREACIÃ“N MANUAL
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+/**
+ * ðŸš« DESHABILITADO INTENCIONALMENTE
+ * Antes creaba usuarios â†’ generaba duplicados y bugs de login
+ */
+export async function crearUsuario() {
+  throw new Error(
+    'crearUsuario estÃ¡ deshabilitado. El sistema usa Passkeys como fuente de identidad.'
+  );
+}
+
+/**
+ * ðŸš« DESHABILITADO
+ * Ya no se usa verificaciÃ³n por email como lÃ³gica de identidad
+ */
+export async function usuarioExiste() {
+  return true;
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// LOGOUT
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+export async function logout() {
+  try {
+    const auth = getAuth();
+    await signOut(auth);
+
+    sessionStorage.clear();
+    localStorage.removeItem('quadra_passkey');
+    localStorage.removeItem('quadra_passkey_user');
+
+    return { error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// PERFIL
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+const DOMINIOS_CORPORATIVOS = ['@quadra.co', '@quadra.com', '@glowy.co'];
+
+export function getLoggedUserProfile() {
+  try {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) return null;
+
+    let name = user.displayName;
+
+    if (!name && user.email) {
+      const alias = user.email.split('@')[0];
+
+      name = alias
+        .replace(/[._-]/g, ' ')
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
+    const initials = name
+      ? name
+          .split(' ')
+          .map((p) => p[0])
+          .join('')
+          .substring(0, 2)
+          .toUpperCase()
+      : 'U';
+
+    const isCorporate = DOMINIOS_CORPORATIVOS.some((d) =>
+      user.email?.toLowerCase().endsWith(d)
+    );
+
+    return {
+      uid: user.uid,
+      email: user.email,
+      displayName: name || 'Usuario',
+      photoURL: user.photoURL || null,
+      initials: initials || 'U',
+      role: isCorporate ? 'Analista Cartera' : 'Usuario PÃºblico',
+      emailVerified: user.emailVerified,
+      metadata: user.metadata,
+      hasPasskey: !!localStorage.getItem('quadra_passkey'),
+    };
+  } catch {
+    return null;
+  }
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// AUTH STATE
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+export function getCurrentUser() {
+  try {
+    const auth = getAuth();
+    return auth.currentUser;
+  } catch {
+    return null;
+  }
+}
+
+export function onAuthStateChangedListener(callback) {
+  const auth = getAuth();
+  return onAuthStateChanged(auth, callback);
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// UPDATE / DELETE (opcionales pero vÃ¡lidos)
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+export async function actualizarPerfilUsuario(nuevoNombre, urlFoto = null) {
+  try {
+    const auth = getAuth();
+
+    if (!auth.currentUser) return false;
+
+    await updateProfile(auth.currentUser, {
+      displayName: nuevoNombre,
+      photoURL: urlFoto || auth.currentUser.photoURL,
+    });
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function eliminarCuenta() {
+  try {
+    const auth = getAuth();
+
+    if (!auth.currentUser) {
+      return { error: 'No hay usuario autenticado' };
+    }
+
+    await deleteUser(auth.currentUser);
+
+    localStorage.removeItem('quadra_passkey');
+    localStorage.removeItem('quadra_passkey_user');
+
+    return { error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+================ PASSKEY SERVICE ================
+// src/infra/auth/passkey.service.js
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// Servicio de Passkeys (WebAuthn) - SIN CONTRASEÃ‘AS
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+import { getAuthInstance } from '../firebase.config.js';
+
+function getAuth() {
+  return getAuthInstance();
+}
+
+// â”€â”€â”€ UTILITIES â”€â”€â”€
+
+function bufferToBase64URL(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let str = '';
+  for (const byte of bytes) {
+    str += String.fromCharCode(byte);
+  }
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function base64URLToBuffer(base64url) {
+  const padding = '='.repeat((4 - (base64url.length % 4)) % 4);
+  const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/') + padding;
+  const str = atob(base64);
+  const buffer = new ArrayBuffer(str.length);
+  const bytes = new Uint8Array(buffer);
+  for (let i = 0; i < str.length; i++) {
+    bytes[i] = str.charCodeAt(i);
+  }
+  return buffer;
+}
+
+// â”€â”€â”€ DETECCIÃ“N â”€â”€â”€
+
+export function isPasskeySupported() {
+  return (
+    window.PublicKeyCredential &&
+    typeof window.PublicKeyCredential === 'function' &&
+    navigator.credentials &&
+    typeof navigator.credentials.get === 'function'
+  );
+}
+
+export async function isBiometricAvailable() {
+  if (!isPasskeySupported()) return false;
+  try {
+    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  } catch {
+    return false;
+  }
+}
+
+// â”€â”€â”€ REGISTRO DE PASSKEY â”€â”€â”€
+
+/**
+ * Registra una nueva Passkey para el usuario autenticado
+ * @param {string} email - Email del usuario
+ * @param {string} uid - UID de Firebase
+ * @param {string} displayName - Nombre para mostrar
+ */
+export async function registerPasskey(email, uid, displayName) {
+  if (!isPasskeySupported()) {
+    throw new Error('Este navegador no soporta Passkeys');
+  }
+
+  const challenge = new Uint8Array(32);
+  crypto.getRandomValues(challenge);
+
+  const publicKeyCredentialCreationOptions = {
+    challenge: challenge,
+    rp: {
+      name: 'Quadra Finances',
+      id: window.location.hostname,
+    },
+    user: {
+      id: new TextEncoder().encode(uid),
+      name: email,
+      displayName: displayName || email.split('@')[0],
+    },
+    pubKeyCredParams: [
+      { type: 'public-key', alg: -7 },   // ES256
+      { type: 'public-key', alg: -257 }, // RS256
+    ],
+    authenticatorSelection: {
+      authenticatorAttachment: 'platform',
+      residentKey: 'required',
+      userVerification: 'required',
+    },
+    timeout: 60000,
+    attestation: 'none',
+  };
+
+  try {
+    const credential = await navigator.credentials.create({
+      publicKey: publicKeyCredentialCreationOptions,
+    });
+
+    const credData = {
+      id: credential.id,
+      rawId: bufferToBase64URL(credential.rawId),
+      type: credential.type,
+      response: {
+        clientDataJSON: bufferToBase64URL(credential.response.clientDataJSON),
+        attestationObject: bufferToBase64URL(credential.response.attestationObject),
+        transports: credential.response.transports || [],
+      },
+    };
+
+    // Almacenar credencial en localStorage (demo)
+    localStorage.setItem('quadra_passkey', JSON.stringify(credData));
+    localStorage.setItem('quadra_passkey_user', uid);
+
+    console.log('âœ“ Passkey registrada correctamente');
+    return { success: true, credential: credData };
+  } catch (error) {
+    console.error('Error registrando Passkey:', error);
+    throw new Error(`Error registrando Passkey: ${error.message}`);
+  }
+}
+
+// â”€â”€â”€ AUTENTICACIÃ“N CON PASSKEY â”€â”€â”€
+
+/**
+ * Autentica al usuario usando su Passkey registrada
+ * @param {string} email - Email del usuario (para validaciÃ³n)
+ */
+export async function authenticateWithPasskey(email) {
+  if (!isPasskeySupported()) {
+    throw new Error('Este navegador no soporta Passkeys');
+  }
+
+  const storedCred = localStorage.getItem('quadra_passkey');
+  if (!storedCred) {
+    throw new Error('No se encontrÃ³ una Passkey registrada en este dispositivo.');
+  }
+
+  const credData = JSON.parse(storedCred);
+  const challenge = new Uint8Array(32);
+  crypto.getRandomValues(challenge);
+
+  const publicKeyCredentialRequestOptions = {
+    challenge: challenge,
+    timeout: 60000,
+    rpId: window.location.hostname,
+    allowCredentials: [{
+      id: base64URLToBuffer(credData.rawId),
+      type: 'public-key',
+    }],
+    userVerification: 'required',
+  };
+
+  try {
+    const credential = await navigator.credentials.get({
+      publicKey: publicKeyCredentialRequestOptions,
+    });
+
+    if (!credential) {
+      throw new Error('AutenticaciÃ³n cancelada');
+    }
+
+    const userUid = localStorage.getItem('quadra_passkey_user');
+    if (!userUid) {
+      throw new Error('Usuario local no mapeado');
+    }
+
+    console.log('âœ“ AutenticaciÃ³n Passkey exitosa');
+    return { success: true, uid: userUid };
+  } catch (error) {
+    console.error('Error autenticando con Passkey:', error);
+    throw new Error(`Error de autenticaciÃ³n: ${error.message}`);
+  }
+}
+
+export function removePasskey() {
+  localStorage.removeItem('quadra_passkey');
+  localStorage.removeItem('quadra_passkey_user');
+}
+
+export function hasPasskey() {
+  return !!localStorage.getItem('quadra_passkey');
+}
+
+================ LOGIN ================
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Mail,
+  Fingerprint,
+  AlertCircle,
+  Building2,
+  Shield,
+  ArrowRight
+} from 'lucide-react';
+
+import {
+  getCurrentUser
+} from '../../infra/auth/auth.service';
+
+import {
+  authenticateWithPasskey,
+  isPasskeySupported,
+  isBiometricAvailable,
+  hasPasskey
+} from '../../infra/auth/passkey.service';
+
+import { useMousePosition } from '../../hooks/useMousePosition';
+import styles from './Login.module.css';
+
+const DOMINIOS_CORPORATIVOS = ['@quadra.co', '@quadra.com', '@glowy.co'];
+
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [passkeySupported, setPasskeySupported] = useState(false);
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+
+  const navigate = useNavigate();
+  const containerRef = useRef(null);
+  const mousePos = useMousePosition();
+
+  useEffect(() => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      containerRef.current.style.setProperty('--mouse-x', `${mousePos.x - rect.left}px`);
+      containerRef.current.style.setProperty('--mouse-y', `${mousePos.y - rect.top}px`);
+    }
+  }, [mousePos]);
+
+  useEffect(() => {
+    const user = getCurrentUser();
+    if (user) navigate('/');
+
+    const supported = isPasskeySupported();
+    setPasskeySupported(supported);
+
+    if (supported) {
+      isBiometricAvailable().then(setBiometricAvailable);
+    }
+  }, [navigate]);
+
+  const isCorporateDomain = (email) =>
+    DOMINIOS_CORPORATIVOS.some(d => email.toLowerCase().endsWith(d));
+
+  // =========================
+  // LOGIN FLOW (CORRECTO)
+  // =========================
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email) {
+      setError('Ingresa tu correo electrÃ³nico');
+      return;
+    }
+
+    if (!email.includes('@')) {
+      setError('Correo invÃ¡lido');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (!passkeySupported) {
+        setError('Tu navegador no soporta Passkeys');
+        setLoading(false);
+        return;
+      }
+
+      // ðŸ” ÃšNICA fuente de autenticaciÃ³n real
+      const result = await authenticateWithPasskey(email);
+
+      if (result?.success) {
+        navigate('/');
+        return;
+      }
+
+      setError('No existe passkey registrada para este usuario');
+    } catch (err) {
+      setError('AutenticaciÃ³n fallida o dispositivo no registrado');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasskeyRetry = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await authenticateWithPasskey(email);
+
+      if (result?.success) {
+        navigate('/');
+        return;
+      }
+
+      setError('No se pudo autenticar con biometrÃ­a');
+    } catch {
+      setError('Error en autenticaciÃ³n biomÃ©trica');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div ref={containerRef} className={styles.container}>
+      <div className={styles.glowOrb} />
+
+      <div className={styles.card}>
+        <div className={styles.logo}>
+          <div className={styles.logoIcon}>
+            <Building2 size={24} />
+          </div>
+          <div className={styles.logoText}>
+            Quadra<span>Finances</span>
+          </div>
+        </div>
+
+        <p className={styles.subtitle}>
+          Acceso mediante autenticaciÃ³n biomÃ©trica
+        </p>
+
+        {passkeySupported && biometricAvailable && (
+          <div className={styles.passkeyStatus}>
+            <Shield size={14} />
+            <span>BiometrÃ­a disponible</span>
+          </div>
+        )}
+
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <div className={styles.inputGroup}>
+            <label htmlFor="email">Correo electrÃ³nico</label>
+
+            <div className={styles.inputWrapper}>
+              <Mail size={18} className={styles.inputIcon} />
+
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="ejemplo@correo.com"
+                disabled={loading}
+                className={error ? styles.error : ''}
+                autoComplete="email"
+              />
+
+              <button
+                type="submit"
+                className={styles.nextButton}
+                disabled={loading || !email}
+              >
+                {loading ? (
+                  <span className={styles.spinnerSmall} />
+                ) : (
+                  <ArrowRight size={18} />
+                )}
+              </button>
+            </div>
+
+            {error && (
+              <div className={styles.errorMessage}>
+                <AlertCircle size={16} />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <div className={styles.hint}>
+              {email && isCorporateDomain(email) && passkeySupported ? (
+                <span className={styles.hintBiometric}>
+                  <Fingerprint size={14} />
+                  AutenticaciÃ³n biomÃ©trica disponible
+                </span>
+              ) : (
+                <span className={styles.hintDefault}>
+                  Ingresa tu correo para continuar
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.passkeyInfo}>
+            <Fingerprint size={18} />
+            <span>Sin contraseÃ±as â€¢ Solo biometrÃ­a</span>
+          </div>
+        </form>
+
+        {error && (
+          <button
+            type="button"
+            className={styles.passkeyRetry}
+            onClick={handlePasskeyRetry}
+            disabled={loading}
+          >
+            <Fingerprint size={16} />
+            Reintentar biometrÃ­a
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+================ HOOK PASSKEY ================
+// src/hooks/usePasskey.js
+import { useState, useEffect } from 'react';
+import { 
+  isPasskeySupported, 
+  isBiometricAvailable, 
+  hasPasskey,
+  registerPasskey,
+  authenticateWithPasskey,
+  removePasskey
+} from '../infra/auth/passkey.service';
+
+export function usePasskey() {
+  const [supported, setSupported] = useState(false);
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [hasRegisteredPasskey, setHasRegisteredPasskey] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const checkAvailability = async () => {
+      try {
+        const supportedCheck = isPasskeySupported();
+        setSupported(supportedCheck);
+        
+        if (supportedCheck) {
+          const bioCheck = await isBiometricAvailable();
+          setBiometricAvailable(bioCheck);
+        }
+        
+        setHasRegisteredPasskey(hasPasskey());
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAvailability();
+  }, []);
+
+  const register = async (email, displayName) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await registerPasskey(email, displayName);
+      setHasRegisteredPasskey(true);
+      return result;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const authenticate = async (email) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await authenticateWithPasskey(email);
+      return result;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const remove = () => {
+    removePasskey();
+    setHasRegisteredPasskey(false);
+  };
+
+  return {
+    supported,
+    biometricAvailable,
+    hasRegisteredPasskey,
+    loading,
+    error,
+    register,
+    authenticate,
+    remove,
+  };
+}
+
+================ BUSQUEDA FIREBASE AUTH ================
+
+src\components\auth\Login.jsx:13:  getCurrentUser
+src\components\auth\Login.jsx:48:    const user = getCurrentUser();
+src\components\shared\GlobalHeader.jsx:25:import { getAuth, onAuthStateChanged } from 'firebase/auth'; // 👈 Importación clave para escuchar el usuario real
+src\components\shared\GlobalHeader.jsx:238:  const [currentUserProfile, setCurrentUserProfile] = useState(null);
+src\components\shared\GlobalHeader.jsx:241:    const auth = getAuth();
+src\components\shared\GlobalHeader.jsx:243:    const unsubscribe = onAuthStateChanged(auth, (user) => {
+src\components\shared\GlobalHeader.jsx:246:        setCurrentUserProfile(profile);
+src\components\shared\GlobalHeader.jsx:248:        setCurrentUserProfile(null);
+src\components\shared\GlobalHeader.jsx:548:                    {currentUserProfile?.initials || 'U'}
+src\components\shared\GlobalHeader.jsx:561:                    {currentUserProfile?.displayName || 'Cargando...'}
+src\components\shared\GlobalHeader.jsx:564:                    {currentUserProfile?.role || 'Usuario'}
+src\components\shared\GlobalHeader.jsx:586:                          {currentUserProfile?.initials || 'U'}
+src\components\shared\GlobalHeader.jsx:590:                            {currentUserProfile?.displayName || 'Usuario'}
+src\components\shared\GlobalHeader.jsx:593:                            {currentUserProfile?.role || 'Analista de cartera'}
+src\infra\auth\auth.service.js:8:  onAuthStateChanged,
+src\infra\auth\auth.service.js:13:import { getAuthInstance } from '../firebase.config.js';
+src\infra\auth\auth.service.js:15:function getAuth() {
+src\infra\auth\auth.service.js:16:  return getAuthInstance();
+src\infra\auth\auth.service.js:47:    const auth = getAuth();
+src\infra\auth\auth.service.js:68:    const auth = getAuth();
+src\infra\auth\auth.service.js:69:    const user = auth.currentUser;
+src\infra\auth\auth.service.js:116:export function getCurrentUser() {
+src\infra\auth\auth.service.js:118:    const auth = getAuth();
+src\infra\auth\auth.service.js:119:    return auth.currentUser;
+src\infra\auth\auth.service.js:125:export function onAuthStateChangedListener(callback) {
+src\infra\auth\auth.service.js:126:  const auth = getAuth();
+src\infra\auth\auth.service.js:127:  return onAuthStateChanged(auth, callback);
+src\infra\auth\auth.service.js:136:    const auth = getAuth();
+src\infra\auth\auth.service.js:138:    if (!auth.currentUser) return false;
+src\infra\auth\auth.service.js:140:    await updateProfile(auth.currentUser, {
+src\infra\auth\auth.service.js:142:      photoURL: urlFoto || auth.currentUser.photoURL,
+src\infra\auth\auth.service.js:153:    const auth = getAuth();
+src\infra\auth\auth.service.js:155:    if (!auth.currentUser) {
+src\infra\auth\auth.service.js:159:    await deleteUser(auth.currentUser);
+src\infra\auth\passkey.service.js:6:import { getAuthInstance } from '../firebase.config.js';
+src\infra\auth\passkey.service.js:8:function getAuth() {
+src\infra\auth\passkey.service.js:9:  return getAuthInstance();
+src\infra\firebase.config.js:8:import { getAuth } from 'firebase/auth';
+src\infra\firebase.config.js:43:  auth = getAuth(app);
+src\infra\firebase.config.js:53:export function getAuthInstance() {
+src\infra\firebase.config.js:77:  getAuthInstance,
+src\infra\useAuth.js:11:  getCurrentUser,
+src\infra\useAuth.js:12:  onAuthStateChangedListener,
+src\infra\useAuth.js:32:    const unsubscribe = onAuthStateChangedListener((authUser) => {
+
+
+
+================ BUSQUEDA PASSKEY ================
+
+src\components\auth\Login.jsx:17:  authenticateWithPasskey,
+src\components\auth\Login.jsx:20:  hasPasskey
+src\components\auth\Login.jsx:89:      const result = await authenticateWithPasskey(email);
+src\components\auth\Login.jsx:109:      const result = await authenticateWithPasskey(email);
+src\hooks\usePasskey.js:6:  hasPasskey,
+src\hooks\usePasskey.js:7:  registerPasskey,
+src\hooks\usePasskey.js:8:  authenticateWithPasskey,
+src\hooks\usePasskey.js:9:  removePasskey
+src\hooks\usePasskey.js:30:        setHasRegisteredPasskey(hasPasskey());
+src\hooks\usePasskey.js:45:      const result = await registerPasskey(email, displayName);
+src\hooks\usePasskey.js:60:      const result = await authenticateWithPasskey(email);
+src\hooks\usePasskey.js:71:    removePasskey();
+src\infra\auth\auth.service.js:105:      hasPasskey: !!localStorage.getItem('quadra_passkey'),
+src\infra\auth\passkey.service.js:39:    window.PublicKeyCredential &&
+src\infra\auth\passkey.service.js:40:    typeof window.PublicKeyCredential === 'function' &&
+src\infra\auth\passkey.service.js:41:    navigator.credentials &&
+src\infra\auth\passkey.service.js:42:    typeof navigator.credentials.get === 'function'
+src\infra\auth\passkey.service.js:49:    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+src\infra\auth\passkey.service.js:63:export async function registerPasskey(email, uid, displayName) {
+src\infra\auth\passkey.service.js:71:  const publicKeyCredentialCreationOptions = {
+src\infra\auth\passkey.service.js:96:    const credential = await navigator.credentials.create({
+src\infra\auth\passkey.service.js:97:      publicKey: publicKeyCredentialCreationOptions,
+src\infra\auth\passkey.service.js:129:export async function authenticateWithPasskey(email) {
+src\infra\auth\passkey.service.js:143:  const publicKeyCredentialRequestOptions = {
+src\infra\auth\passkey.service.js:155:    const credential = await navigator.credentials.get({
+src\infra\auth\passkey.service.js:156:      publicKey: publicKeyCredentialRequestOptions,
+src\infra\auth\passkey.service.js:176:export function removePasskey() {
+src\infra\auth\passkey.service.js:181:export function hasPasskey() {
+
+
+
+================ ENV (SIN SECRETOS) ================
+=***
+=***
+=***
+=***
+=***
+=***

@@ -1,7 +1,7 @@
 /* ✅ Footer */
 .footer {
-  background: var(--navy);
-  border-top: 1px solid rgba(255,255,255,0.04);
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border-primary);
   padding: 8px 24px;
   font-family: var(--font-ui);
   margin-top: auto;
@@ -39,13 +39,13 @@
   font-family: var(--font-display);
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255,255,255,0.7);
+  color: var(--color-text-primary);
   letter-spacing: -0.02em;
 }
 
 .brandVersion {
   font-size: 9px;
-  color: rgba(255, 255, 255, 0.712);
+  color: var(--color-text-secondary);
   font-weight: 400;
 }
 
@@ -65,24 +65,24 @@
 }
 
 .footerStatLabel {
-  color: rgba(255,255,255,0.25);
+  color: var(--color-text-tertiary);
   font-weight: 400;
 }
 
 .footerStatValue {
-  color: rgba(255,255,255,0.7);
+  color: var(--color-text-primary);
   font-weight: 600;
 }
 
 .footerStatDivider {
   width: 1px;
   height: 14px;
-  background: rgba(255,255,255,0.06);
+  background: var(--color-border-primary);
 }
 
 .footerStatEmpty {
   font-size: 11px;
-  color: rgba(255,255,255,0.2);
+  color: var(--color-text-tertiary);
 }
 
 /* Tech */
@@ -98,7 +98,7 @@
   align-items: center;
   gap: 4px;
   font-size: 10px;
-  color: rgba(255,255,255,0.25);
+  color: var(--color-text-tertiary);
 }
 
 .techItem svg {
@@ -107,21 +107,21 @@
 }
 
 .techItem.stable {
-  color: #10b981;
+  color: var(--color-success);
 }
 
 .techItem.warning {
-  color: #f59e0b;
+  color: var(--color-warning);
 }
 
 .techItem.error {
-  color: #ef4444;
+  color: var(--color-error);
 }
 
 .techDivider {
   width: 1px;
   height: 12px;
-  background: rgba(255,255,255,0.06);
+  background: var(--color-border-primary);
 }
 
 /* Chart */
@@ -129,7 +129,7 @@
   width: 120px;
   height: 30px;
   flex-shrink: 0;
-  background: rgba(255,255,255,0.02);
+  background: var(--color-bg-tertiary);
   border-radius: 4px;
   padding: 1px 0;
 }
@@ -141,7 +141,7 @@
   width: 100%;
   height: 100%;
   font-size: 9px;
-  color: rgba(255,255,255,0.15);
+  color: var(--color-text-tertiary);
 }
 
 /* Scroll Button */
@@ -151,10 +151,10 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-primary);
   border-radius: 6px;
-  color: rgba(255,255,255,0.25);
+  color: var(--color-text-tertiary);
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
@@ -162,9 +162,9 @@
 }
 
 .scrollButton:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.6);
+  background: var(--color-bg-elevated);
+  border-color: var(--color-border-primary);
+  color: var(--color-text-primary);
   transform: translateY(-2px);
 }
 
@@ -174,8 +174,8 @@
   bottom: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%) scale(0.9);
-  background: rgba(11,16,38,0.95);
-  color: rgba(255,255,255,0.8);
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
   padding: 3px 8px;
   border-radius: 4px;
   font-size: 9px;
@@ -184,7 +184,7 @@
   opacity: 0;
   pointer-events: none;
   transition: all 0.2s ease;
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid var(--color-border-primary);
 }
 
 .scrollButton:hover::after {
@@ -242,7 +242,7 @@
   }
   
   .footerTech {
-    display: none; /* Ocultar info técnica en móvil */
+    display: none;
   }
 }
 
@@ -278,7 +278,7 @@
   }
   
   .footerStatLabel {
-    display: none; /* Ocultar labels en móvil muy pequeño */
+    display: none;
   }
   
   .footerChart {

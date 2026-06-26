@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Licencias - solo lectura por el propio usuario
+    match /licencias/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+    // Configuración de usuario - lectura/escritura solo por el propio usuario
+    match /usuarios/{uid}/config/{document} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    // Bloquear todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

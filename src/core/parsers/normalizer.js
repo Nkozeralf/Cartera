@@ -12,7 +12,12 @@
  *   "1000000" → 1000000
  */
 export function parsearValorCOP(valorStr) {
-  if (!valorStr || typeof valorStr !== 'string') return 0;
+  console.log(`🔍 [normalizer] parsearValorCOP input: "${valorStr}"`);
+  
+  if (!valorStr || typeof valorStr !== 'string') {
+    console.warn(`⚠️ [normalizer] parsearValorCOP: input inválido, retornando 0`);
+    return 0;
+  }
 
   let limpio = valorStr.trim();
 
@@ -33,21 +38,28 @@ export function parsearValorCOP(valorStr) {
   }
 
   const numero = parseFloat(limpio);
-  return isNaN(numero) ? 0 : numero;
+  const resultado = isNaN(numero) ? 0 : numero;
+  console.log(`✅ [normalizer] parsearValorCOP: "${valorStr}" → ${resultado}`);
+  return resultado;
 }
 
 /**
  * Limpia y normaliza la descripción de un movimiento
  */
 export function limpiarDescripcion(descripcion) {
-  if (!descripcion) return '';
+  console.log(`🔍 [normalizer] limpiarDescripcion input: "${descripcion}"`);
+  
+  if (!descripcion) {
+    console.warn(`⚠️ [normalizer] limpiarDescripcion: input vacío`);
+    return '';
+  }
 
   let limpia = descripcion.trim();
   limpia = limpia.replace(/\s+/g, ' ');
   limpia = limpia.replace(/^[^\wáéíóúñÁÉÍÓÚÑ]+/, '');
   limpia = limpia.replace(/[^\wáéíóúñÁÉÍÓÚÑ]+$/, '');
   limpia = limpia.toUpperCase();
-
+  console.log(`✅ [normalizer] limpiarDescripcion: "${descripcion}" → "${limpia}"`);
   return limpia;
 }
 
